@@ -2,6 +2,7 @@ require 'socket'
 class Robotomate
   class Daemon
     @@daemons = {}
+
     def initialize(options)
       @@daemons["#{options[:host]}:#{options[:port}"] = self
       @host = options[:host]
@@ -9,9 +10,18 @@ class Robotomate
       @debug = options[:debug]
     end
 
-    def send(msg)
+    def send_msg(msg)
       debug_log "Sending: #{msg}"
       @socket.print msg
+    end
+    def send_cmd(device, command)
+      begin
+        self.send("send_#{short_name(device)}", device, command)
+      rescue NoMethodError => e
+        x = e.exception("No device method send_#{short_name(device)} for #{self.class.name})")
+        x.set_backtrace(e.backtrace)
+        raise x
+      end
     end
     def read_next(timeout = 100)
       listeners = IO.select([ @socket ], nil, nil, 100)
@@ -45,6 +55,9 @@ class Robotomate
       return captured
     end
 
+    def connected?
+      @socket && !@socket.eof?
+    end
     def reconnect
       disconnect
       connect
@@ -58,6 +71,11 @@ class Robotomate
 
     def self.cleanup
       @@daemons.each { |daemon| daemon.disconnect }
+    end
+
+    protected
+    def short_name(device)
+      device.class.name.sub(/^Robotomate::Daemon::/, '').downcase.gsub(/[^a-z0-9]+/, '_')
     end
 
     private
