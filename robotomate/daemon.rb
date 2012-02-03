@@ -1,13 +1,14 @@
 require 'socket'
+require 'pp'
 class Robotomate
   class Daemon
     @@daemons = {}
 
     def initialize(options)
-      @@daemons["#{options[:host]}:#{options[:port}"] = self
-      @host = options[:host]
-      @port = options[:port]
-      @debug = options[:debug]
+      @@daemons["#{options['host']}:#{options['port']}"] = self
+      @host = options['host']
+      @port = options['port']
+      @debug = options['debug']
     end
 
     def send_msg(msg)
@@ -24,13 +25,14 @@ class Robotomate
       end
     end
     def read_next(timeout = 100)
-      listeners = IO.select([ @socket ], nil, nil, 100)
-      debug_log "Attempting to read: #{res}"
-      if listeners.include?(@socket)
+      timeout_ms = timeout.to_f / 1000
+      listeners = IO.select([ @socket ], nil, nil, timeout_ms)
+      if listeners && listeners[0].include?(@socket)
         if @socket.eof?
+          @socket.puts "effyou"
           raise new Exception("Disconnected by remote side")
         else
-          res = @socket.gets()
+          res = gets_nonblock(@socket, timeout)
           debug_log "  Read: #{res}"
           return res
         end
@@ -39,18 +41,25 @@ class Robotomate
         return nil
       end
     end
-    def wait_for(regex, timeout = 1500)
+    def wait_for(regex, multiline = true, timeout = 1500)
+      if !!(regex.options & Regexp::MULTILINE) != multiline
+        new_opts = (regex.options & ~Regexp::MULTILINE)
+        new_opts |= Regexp::MULTILINE if multiline
+        regex = Regexp.new(regex.source, new_opts)
+      end
       ms_timeout = timeout > 0 ? timeout/1000 : 0
+      debug_log "Looking for #{regex.inspect} in the next #{ms_timeout} seconds"
       start = Time.now
       captured = { :success => false, :last => nil, :capture => nil, :all => [] }
       while (true) do
         captured[:last] = read_next
         if captured[:last]
-          captured[:capture] = regex.match(captured[:last])
-          captured[:success] = !!captured[:capture]
           captured[:all].push captured[:last]
+          captured[:capture] = regex.match(captured[:all].join("\n"))
+          captured[:success] = !!captured[:capture]
         end
-        break if (start + ms_timeout > Time.now)
+        break if captured[:capture]
+        break if (start + ms_timeout < Time.now)
       end
       return captured
     end
@@ -63,7 +72,7 @@ class Robotomate
       connect
     end
     def connect
-      @socket = TCPSocket.open(options[:host], :options[:port])
+      @socket = TCPSocket.open(@host, @port)
     end
     def disconnect
       @socket.close
@@ -81,6 +90,22 @@ class Robotomate
     private
     def debug_log(msg)
       $stderr.puts msg if @debug
+    end
+    def gets_nonblock(socket, timeout=100)
+      timeout_ms = timeout.to_f / 1000
+      res = ""
+      while true do
+        listeners = IO.select([ socket ], nil, nil, timeout_ms)
+        if listeners && listeners[0].include?(socket)
+          break if socket.eof?
+          char = socket.read_nonblock(1)
+          res += char
+          break if char == "\n"
+        else
+          break
+        end
+      end
+      res
     end
   end
 end
