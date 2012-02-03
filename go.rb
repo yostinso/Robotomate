@@ -2,6 +2,7 @@
 
 require 'yaml'
 require 'robotomate/daemon'
+require 'robotomate/devices'
 
 config = YAML.load(File.read("daemons.yml"))
 config.each do |driver_name, options|
@@ -20,9 +21,10 @@ end
 # TESTING
 ezs = @drivers["EZSrve"]
 ezs.connect
-ezs.send_msg('<Command Name="SendX10" House="A" Unit="2" Cmd="Off" />')
 
-require 'pp'
-puts ezs.wait_for(/<Response\s+Name="SendX10"\s+Status="([^"]*)".*<\/Response>/, 3000).pretty_inspect
+lamp = Robotomate::Devices::X10::Lamp.new("A", 2, ezs)
+#lamp.on
+
+lamp.off
 
 ezs.disconnect
