@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+
+<title>class Device::X10::Lamp - Rails Application Documentation</title>
+
+<link type="text/css" media="screen" href="../../rdoc.css" rel="stylesheet">
+
+<script type="text/javascript">
+  var rdoc_rel_prefix = "../../";
+</script>
+
+<script type="text/javascript" charset="utf-8" src="../../js/jquery.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/navigation.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/search_index.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/search.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/searcher.js"></script>
+<script type="text/javascript" charset="utf-8" src="../../js/darkfish.js"></script>
+
+
+<body id="top" class="class">
+<nav id="metadata">
+  <nav id="home-section" class="section">
+  <h3 class="section-header">
+    <a href="../../index.html">Home</a>
+    <a href="../../table_of_contents.html#classes">Classes</a>
+    <a href="../../table_of_contents.html#methods">Methods</a>
+  </h3>
+</nav>
+
+
+  <nav id="search-section" class="section project-section" class="initially-hidden">
+  <form action="#" method="get" accept-charset="utf-8">
+    <h3 class="section-header">
+      <input type="text" name="search" placeholder="Search" id="search-field"
+             title="Type to search, Up and Down to navigate, Enter to load">
+    </h3>
+  </form>
+
+  <ul id="search-results" class="initially-hidden"></ul>
+</nav>
+
+
+  <div id="file-metadata">
+    <nav id="file-list-section" class="section">
+  <h3 class="section-header">Defined In</h3>
+  <ul>
+    <li>app/models/device/x10/lamp.rb
+  </ul>
+</nav>
+
+    
+  </div>
+
+  <div id="class-metadata">
+    
+    <nav id="parent-class-section" class="section">
+  <h3 class="section-header">Parent</h3>
+  
+  <p class="link"><a href="../X10.html">Device::X10</a>
+  
+</nav>
+
+    
+    <!-- Method Quickref -->
+<nav id="method-list-section" class="section">
+  <h3 class="section-header">Methods</h3>
+
+  <ul class="link-list">
+    
+    <li><a href="#method-i-bright">#bright</a>
+    
+    <li><a href="#method-i-brighten">#brighten</a>
+    
+    <li><a href="#method-i-dim">#dim</a>
+    
+    <li><a href="#method-i-dim_to">#dim_to</a>
+    
+    <li><a href="#method-i-off">#off</a>
+    
+    <li><a href="#method-i-on">#on</a>
+    
+    <li><a href="#method-i-reset_dim">#reset_dim</a>
+    
+    <li><a href="#method-i-reset_dim-21">#reset_dim!</a>
+    
+  </ul>
+</nav>
+
+  </div>
+
+  <div id="project-metadata">
+    <nav id="fileindex-section" class="section project-section">
+  <h3 class="section-header">Pages</h3>
+
+  <ul>
+  
+    <li class="file"><a href="../../doc/README_FOR_APP.html">README_FOR_APP</a>
+  
+  </ul>
+</nav>
+
+    <nav id="classindex-section" class="section project-section">
+  <h3 class="section-header">Class and Module Index</h3>
+
+  <ul class="link-list">
+  
+    <li><a href="../../Device.html">Device</a>
+  
+    <li><a href="../../Device/X10.html">Device::X10</a>
+  
+    <li><a href="../../Device/X10/Lamp.html">Device::X10::Lamp</a>
+  
+    <li><a href="../../Robotomate.html">Robotomate</a>
+  
+    <li><a href="../../Robotomate/Device.html">Robotomate::Device</a>
+  
+    <li><a href="../../Robotomate/Device/NoDaemonException.html">Robotomate::Device::NoDaemonException</a>
+  
+    <li><a href="../../ApplicationController.html">ApplicationController</a>
+  
+    <li><a href="../../ApplicationHelper.html">ApplicationHelper</a>
+  
+    <li><a href="../../DeviceController.html">DeviceController</a>
+  
+    <li><a href="../../DeviceHelper.html">DeviceHelper</a>
+  
+  </ul>
+</nav>
+
+  </div>
+</nav>
+
+<div id="documentation">
+  <h1 class="class">class Device::X10::Lamp</h1>
+
+  <div id="description" class="description">
+    
+  </div><!-- description -->
+
+  
+  
+  
+  <section id="5Buntitled-5D" class="documentation-section">
+    
+
+    
+
+    
+    <!-- Constants -->
+    <section id="constants-list" class="section">
+      <h3 class="section-header">Constants</h3>
+      <dl>
+      
+        <dt id="MAX_BRIGHT">MAX_BRIGHT
+        
+        <dd class="description">
+        
+      
+        <dt id="MIN_BRIGHT">MIN_BRIGHT
+        
+        <dd class="description">
+        
+      
+      </dl>
+    </section>
+    
+
+    
+
+    <!-- Methods -->
+    
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Public Instance Methods</h3>
+
+    
+      <div id="method-i-bright" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">bright</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="bright-source">
+            <pre><span class="ruby-comment"># File app/models/device/x10/lamp.rb, line 21</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">bright</span>
+  <span class="ruby-ivar">@daemon</span>.<span class="ruby-identifier">send_cmd</span>(<span class="ruby-keyword">self</span>, <span class="ruby-value">:bright</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">off?</span>
+    <span class="ruby-ivar">@dim_level</span> = <span class="ruby-constant">MAX_BRIGHT</span>
+  <span class="ruby-keyword">elsif</span> (<span class="ruby-ivar">@dim_level</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@dim_level</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MAX_BRIGHT</span>)
+    <span class="ruby-ivar">@dim_level</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- bright-source -->
+          
+        </div>
+
+        
+        <div class="aliases">
+          Also aliased as: <a href="Lamp.html#method-i-brighten">brighten</a>
+        </div>
+        
+
+        
+      </div><!-- bright-method -->
+
+    
+      <div id="method-i-brighten" class="method-detail method-alias">
+        
+        <div class="method-heading">
+          <span class="method-name">brighten</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+        </div>
+
+        
+
+        
+        <div class="aliases">
+          Alias for: <a href="Lamp.html#method-i-bright">bright</a>
+        </div>
+        
+      </div><!-- brighten-method -->
+
+    
+      <div id="method-i-dim" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">dim</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="dim-source">
+            <pre><span class="ruby-comment"># File app/models/device/x10/lamp.rb, line 13</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">dim</span>
+  <span class="ruby-ivar">@daemon</span>.<span class="ruby-identifier">send_cmd</span>(<span class="ruby-keyword">self</span>, <span class="ruby-value">:dim</span>)
+  <span class="ruby-keyword">if</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">off?</span>
+    <span class="ruby-ivar">@dim_level</span> = <span class="ruby-constant">MAX_BRIGHT</span>
+  <span class="ruby-keyword">elsif</span> (<span class="ruby-ivar">@dim_level</span> <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-ivar">@dim_level</span> <span class="ruby-operator">&gt;</span> <span class="ruby-constant">MIN_BRIGHT</span>)
+    <span class="ruby-ivar">@dim_level</span> <span class="ruby-operator">-=</span> <span class="ruby-value">1</span> 
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- dim-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- dim-method -->
+
+    
+      <div id="method-i-dim_to" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">dim_to</span><span
+            class="method-args">(val)</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="dim_to-source">
+            <pre><span class="ruby-comment"># File app/models/device/x10/lamp.rb, line 31</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">dim_to</span>(<span class="ruby-identifier">val</span>)
+  <span class="ruby-identifier">raise</span> <span class="ruby-constant">ArgumentError</span>.<span class="ruby-identifier">new</span>(<span class="ruby-node">&quot;Invalid dim level #{val}, must be between #{MIN_BRIGHT-1} and #{MAX_BRIGHT}&quot;</span>) <span class="ruby-keyword">unless</span> (<span class="ruby-identifier">val</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-operator">&gt;=</span> (<span class="ruby-constant">MIN_BRIGHT</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>) <span class="ruby-operator">&amp;&amp;</span> <span class="ruby-identifier">val</span>.<span class="ruby-identifier">to_i</span> <span class="ruby-operator">&lt;=</span> <span class="ruby-constant">MAX_BRIGHT</span>)
+  <span class="ruby-identifier">reset_dim</span>
+
+  <span class="ruby-identifier">val</span> = <span class="ruby-identifier">val</span>.<span class="ruby-identifier">to_i</span>
+  <span class="ruby-identifier">full_off</span> = (<span class="ruby-identifier">val</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_BRIGHT</span>)
+  <span class="ruby-identifier">val</span> = <span class="ruby-constant">MIN_BRIGHT</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">val</span> <span class="ruby-operator">&lt;</span> <span class="ruby-constant">MIN_BRIGHT</span>
+
+  <span class="ruby-keyword">while</span> <span class="ruby-ivar">@dim_level</span> <span class="ruby-operator">!=</span> <span class="ruby-identifier">val</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-ivar">@dim_level</span> <span class="ruby-operator">&gt;</span> <span class="ruby-identifier">val</span>
+      <span class="ruby-keyword">self</span>.<span class="ruby-identifier">dim</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-keyword">self</span>.<span class="ruby-identifier">bright</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">off</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">full_off</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- dim_to-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- dim_to-method -->
+
+    
+      <div id="method-i-off" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">off</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="off-source">
+            <pre><span class="ruby-comment"># File app/models/device/x10/lamp.rb, line 4</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">off</span>
+  <span class="ruby-ivar">@dim_level</span> = <span class="ruby-constant">MIN_BRIGHT</span><span class="ruby-operator">-</span><span class="ruby-value">1</span>
+  <span class="ruby-keyword">super</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- off-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- off-method -->
+
+    
+      <div id="method-i-on" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">on</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="on-source">
+            <pre><span class="ruby-comment"># File app/models/device/x10/lamp.rb, line 8</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">on</span>
+  <span class="ruby-ivar">@dim_level</span> = <span class="ruby-constant">MAX_BRIGHT</span> <span class="ruby-keyword">if</span> <span class="ruby-keyword">self</span>.<span class="ruby-identifier">off?</span>
+  <span class="ruby-keyword">super</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- on-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- on-method -->
+
+    
+    </section><!-- public-instance-method-details -->
+  
+     <section id="protected-instance-5Buntitled-5D-method-details" class="method-section section">
+      <h3 class="section-header">Protected Instance Methods</h3>
+
+    
+      <div id="method-i-reset_dim" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">reset_dim</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="reset_dim-source">
+            <pre><span class="ruby-comment"># File app/models/device/x10/lamp.rb, line 50</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">reset_dim</span>
+  <span class="ruby-keyword">if</span> <span class="ruby-ivar">@dim_level</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-identifier">reset_dim!</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- reset_dim-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- reset_dim-method -->
+
+    
+      <div id="method-i-reset_dim-21" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">reset_dim!</span><span
+            class="method-args">()</span>
+          <span class="method-click-advice">click to toggle source</span>
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+
+          
+          <div class="method-source-code" id="reset_dim-21-source">
+            <pre><span class="ruby-comment"># File app/models/device/x10/lamp.rb, line 55</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">reset_dim!</span>
+  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">off</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@state</span> <span class="ruby-operator">!=</span> <span class="ruby-value">:off</span>
+  <span class="ruby-keyword">self</span>.<span class="ruby-identifier">on</span>
+<span class="ruby-keyword">end</span></pre>
+          </div><!-- reset_dim-21-source -->
+          
+        </div>
+
+        
+
+        
+      </div><!-- reset_dim-21-method -->
+
+    
+    </section><!-- protected-instance-method-details -->
+  
+  </section><!-- 5Buntitled-5D -->
+
+</div><!-- documentation -->
+
+
+<footer id="validator-badges">
+  <p><a href="http://validator.w3.org/check/referer">[Validate]</a>
+  <p>Generated by <a href="https://github.com/rdoc/rdoc">RDoc</a> 3.12.
+  <p>Generated with the <a href="http://deveiate.org/projects/Darkfish-Rdoc/">Darkfish Rdoc Generator</a> 3.
+</footer>
+
