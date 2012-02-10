@@ -1,17 +1,25 @@
 class Robotomate::Devices::X10 < Robotomate::Devices
   attr_reader :house, :unit
-  def initialize(house, unit, daemon = nil)
+  def initialize(house, unit, daemon)
     @house = house
     @unit = unit
     @daemon = daemon
+
+    @state = nil
   end
   def on
-    raise Robotomate::Devices::NoDaemonException unless (@daemon && @daemon.connected?)
     @daemon.send_cmd(self, :on)
+    @state = :on
   end
   def off
-    raise Robotomate::Devices::NoDaemonException unless (@daemon && @daemon.connected?)
     @daemon.send_cmd(self, :off)
+    @state = :off
+  end
+  def off?
+    @state == :off
+  end
+  def on?
+    @state == :on
   end
 end
 

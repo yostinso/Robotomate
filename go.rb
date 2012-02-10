@@ -23,8 +23,6 @@ ezs = @drivers["EZSrve"]
 ezs.connect
 
 lamp = Robotomate::Devices::X10::Lamp.new("A", 2, ezs)
-#lamp.on
-
-lamp.off
+lamp.dim_to(0)
 
 ezs.disconnect

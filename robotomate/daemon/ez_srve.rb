@@ -16,15 +16,19 @@ class Robotomate::Daemon::EZSrve < Robotomate::Daemon
   X10_RESPONSE_MSG = /<Response\s+Name="SendX10"\s+Status="([^"]*)".*<\/Response>/
   def send_x10_on(device)
     msg = x10_message(device, "On")
-    self.send_msg(msg)
-    raise FailureResponse("Bad response from device") unless self.x10_response_status
-    puts res.pretty_inspect
+    self.send_and_verify_x10(msg)
   end
   def send_x10_off(device)
     msg = x10_message(device, "Off")
-    self.send_msg(msg)
-    res = self.x10_response_status
-    puts res.pretty_inspect
+    self.send_and_verify_x10(msg)
+  end
+  def send_x10_dim(device)
+    msg = x10_message(device, "Dim")
+    self.send_and_verify_x10(msg)
+  end
+  def send_x10_bright(device)
+    msg = x10_message(device, "Bright")
+    self.send_and_verify_x10(msg)
   end
 
   def x10_message(device, command)
@@ -34,6 +38,12 @@ class Robotomate::Daemon::EZSrve < Robotomate::Daemon
     res = self.wait_for(X10_RESPONSE_MSG)
     response = res[:capture][1] if res[:success]
     raise BadResponse.new("Bad response from device: #{res.pretty_inspect}") unless response.match(/Success/)
+    response
+  end
+  def send_and_verify_x10(msg)
+    self.send_msg(msg)
+    response = self.x10_response_status
+    raise FailureResponse("Bad response from device") unless response
     response
   end
 end

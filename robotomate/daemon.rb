@@ -1,7 +1,8 @@
 require 'socket'
 class Robotomate
   class Daemon
-    class InvalidDeviceException < ::Exception; end
+    class InvalidDevice < ::Exception; end
+    class NotConnected < ::Exception; end
     @@daemons = {}
 
     def initialize(options)
@@ -17,7 +18,8 @@ class Robotomate
       @socket.print msg
     end
     def send_cmd(device, command)
-      raise InvalidDeviceException.new("Invalid device: #{device.class.name}") unless device.is_a?(Robotomate::Devices)
+      raise InvalidDevice.new("Invalid device: #{device.class.name}") unless device.is_a?(Robotomate::Devices)
+      raise NotConnected.new("Daemon not connected") unless self.connected?
       klass = device.class
       method_name = nil
       while klass.ancestors.include?(Robotomate::Devices) do
