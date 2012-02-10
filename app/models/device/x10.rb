@@ -1,4 +1,4 @@
-class Robotomate::Devices::X10 < Robotomate::Devices
+class Device::X10 < Device
   attr_reader :house, :unit
   def initialize(house, unit, daemon)
     @house = house

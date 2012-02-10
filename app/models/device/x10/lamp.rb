@@ -1,5 +1,4 @@
-require 'robotomate/devices/x10'
-class Robotomate::Devices::X10::Lamp < Robotomate::Devices::X10
+class Device::X10::Lamp < Device::X10
   MAX_BRIGHT=18
   MIN_BRIGHT=1
   def off
