@@ -3,6 +3,8 @@ class DeviceController < ApplicationController
   end
 
   def list
+    @devices = Device.all
+    @device_subset_name = "device"
   end
 
   def create

@@ -1,2 +1,10 @@
-<h1>Device#list</h1>
-<p>Find me in app/views/device/list.html.erb</p>
+<table>
+  <tr><th colspan="2"><%= pluralize(@devices.count, @device_subset_name) %>
+  <tr><th>Name</th><th>Address</th></tr>
+<% @devices.each do |device| %>
+  <tr>
+    <td><%= device.name %></td>
+    <td><%= device.address %></td>
+  </tr>
+<% end %>
+</table>
