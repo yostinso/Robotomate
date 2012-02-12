@@ -1,11 +1,9 @@
 Robotomate::Application.routes.draw do
-  get "device/show"
+  resources :device
 
-  get "device/list"
-
-  get "device/create"
-
-  get "device/edit"
+  if Rails.env == "development" || Rails.env == "test"
+    match 'test/qunit_data_loader' => 'test#qunit_data_loader'
+  end
 
   # The priority is based upon order of creation:
   # first created -> highest priority.
@@ -56,7 +54,7 @@ Robotomate::Application.routes.draw do
 
   # You can have the root of your site routed with "root"
   # just remember to delete public/index.html.
-  # root :to => 'welcome#index'
+  root :to => 'device#index'
 
   # See how all your routes lay out with "rake routes"
 
