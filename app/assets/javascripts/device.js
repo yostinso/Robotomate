@@ -2,28 +2,32 @@
   var DEFAULT_REFRESH_INTERVAL = 5000; // milliseconds; set to 0 for no refresh
   var DEVICE_URI_TEMPLATE = "/device/%d";
   var Device = function(id, fieldElements, defaultValues, options) {
-    options = options || {};
+    this.options = options || {};
     
     this.id = id;
     this.fieldValues = defaultValues || {};
     this.fieldElements = fieldElements || {};
-    this.refreshInterval = (options.refresh == undefined) ? DEFAULT_REFRESH_INTERVAL : options.refresh;
+    this.refreshInterval = (this.options.refresh == undefined) ? DEFAULT_REFRESH_INTERVAL : this.options.refresh;
 
     if (this.refreshInterval > 0) {
       this.start_refresh();
     }
   };
   Device.prototype.stop_refresh = function() {
+    clearTimeout(this.timer);
+    this.timer = undefined;
     this.start_refresh(0);
   }
   Device.prototype.start_refresh = function(new_refresh) {
-    if (new_refresh != undefined) { this.refreshInterval = new_refresh; }
-    if (this.refreshInterval <= 0) { 
-      clearTimeout(this.timer);
-      return;
+    if (new_refresh != undefined) {
+      this.refreshInterval = new_refresh;
+    } else if (this.timer == undefined && this.refreshInterval <= 0) {
+      // Restart with defaults
+      this.refreshInterval = (this.options.refresh == undefined) ? DEFAULT_REFRESH_INTERVAL : this.options.refresh;
     }
+    if (this.refreshInterval <= 0) { return; }
 
-    if (!this.timer) {
+    if (!this.timer && this.refreshInterval > 0) {
       // Start a new timer
       this.do_refresh();
       this.timer = setTimeout(

@@ -26,6 +26,7 @@
         return d;
       };
 
+      // Remove devices
       var remove_device = function(id) {
         var removed = $.grep(deviceListeners, function(d) { return d.id == id; });
         deviceListeners = $.grep(deviceListeners, function(d) { return d.id != id; });
@@ -34,19 +35,6 @@
           d._table_row.remove();
         });
       };
-<% end %>
-
-<table id="devices" border="1">
-  <tr><th>Name</th><th>Address</th></tr>
-  <% content_for :end_body do %>
-    <% @devices.each do |device| %>
-      deviceListeners.push(make_device(<%= device.id %>));
-    <% end %>
-  <% end %>
-</table>
-
-<% content_for :end_body do %>
-      // End device watchers
 
       // Check for new devices
       var deviceListURI = '<%= escape_javascript(url_for(:params => params, :format => :json)) %>';
@@ -72,7 +60,35 @@
           }
         );
       };
-      setInterval(checkForNewDevices, 5000);
+
+      var timer;
+      var startTimer = function() {
+        clearInterval(timer);
+        checkForNewDevices();
+        timer = setInterval(checkForNewDevices, 5000);
+        $(deviceListeners).each(function(i, d) { d.start_refresh(); });
+      };
+      var stopTimer = function() {
+        clearInterval(timer);
+        timer = undefined;
+        $(deviceListeners).each(function(i, d) { d.stop_refresh(); });
+      };
+      $(document).ready(function() { startTimer(); });
+      $('.stop_refresh.devices').click(function() {
+        if (timer) {
+          stopTimer();
+          $(this).html("Start Updating");
+        } else {
+          startTimer();
+          $(this).html("Stop Updating");
+        }
+      });
     })(jQuery);
   </script>
 <% end %>
+
+<table id="devices" border="1">
+  <tr><th>Name</th><th>Address</th></tr>
+</table>
+
+<a class="stop_refresh devices" href="#">Stop Updating</a>
