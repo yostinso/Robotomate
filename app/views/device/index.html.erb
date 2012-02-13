@@ -15,7 +15,13 @@
 
         table.append(table_row);
 
-        var d = new Device(id, { name: name_td, address: address_td });
+        var d = new Device(id, {
+          name: function(device_name) {
+            var a = $(document.createElement('a')).html(device_name).attr('href', '<%= escape_javascript(url_for( :controller => :device, :action => :show, :id => "%d")) %>'.replace('%d', id));
+            name_td.html(a);
+          },
+          address: address_td
+        });
         d._table_row = table_row;
         return d;
       };
