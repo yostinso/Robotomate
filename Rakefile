@@ -4,5 +4,3 @@
 
 require File.expand_path('../config/application', __FILE__)
 Robotomate::Application.load_tasks
-
-require 'resque/tasks'

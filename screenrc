@@ -1,0 +1,4 @@
+sessionname RobotomateDevServers
+zombie kr
+screen -t rails rails server
+screen -t redis redis-server config/redis_devel.conf
