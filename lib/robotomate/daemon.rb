@@ -125,5 +125,3 @@ class Robotomate
     end
   end
 end
-
-Dir.glob(File.join(File.dirname(__FILE__), "daemon", "*.rb")).each { |d| require d }
