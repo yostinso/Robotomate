@@ -12,6 +12,9 @@ gem 'json'
 gem 'system_timer'
 gem 'resque'
 
+# spawn for Resque workers
+gem 'spawn', :git => "git://github.com/rfc2822/spawn"
+
 # Gems used only for assets and not required
 # in production environments by default.
 group :assets do
