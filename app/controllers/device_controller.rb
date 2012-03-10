@@ -28,9 +28,11 @@ class DeviceController < ApplicationController
   def find_device
     begin
       @device = Device.find(params[:id])
+      return true
     rescue
       @device = nil
+      redirect_to(:controller => :device, :action => :index)
+      return false
     end
-    return redirect_to(:controller => :device, :action => :index) unless @device
   end
 end

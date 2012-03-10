@@ -7,7 +7,6 @@ class Device::X10 < Device
   def unit
     self.address.split(/:/)[1]
   end
-  def 
   def on
     raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :on)
@@ -28,6 +27,6 @@ class Device::X10 < Device
   private
   def check_valid_address
     # A-P, 1-16
-    return !!(self.address.match(/^[A-P]:([1-9]|1[0-6])$/))
+    return self.address.match(/^[A-P]:([1-9]|1[0-6])$/) ? true : false
   end
 end

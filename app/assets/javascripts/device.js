@@ -17,7 +17,7 @@
     clearTimeout(this.timer);
     this.timer = undefined;
     this.start_refresh(0);
-  }
+  };
   Device.prototype.start_refresh = function(new_refresh) {
     if (new_refresh != undefined) {
       this.refreshInterval = new_refresh;

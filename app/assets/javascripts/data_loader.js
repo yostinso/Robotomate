@@ -5,9 +5,9 @@
     this.started = false;
     this.uri = uri;
     this.options = options;
-  }
-  Request.prototype.is_for = function(uri) { return (this.uri == uri); }
-  Request.prototype.is_request_for = function(r) { return this.is_for(r.uri); }
+  };
+  Request.prototype.is_for = function(uri) { return (this.uri == uri); };
+  Request.prototype.is_request_for = function(r) { return this.is_for(r.uri); };
   Request.prototype.start = function() {
     if (this.started) { return false; }
     this.started = true;
@@ -31,7 +31,7 @@
     );
   };
 
-  var DataLoader = function(options) {
+  var DataLoader = function() {
     this.outstandingRequests = [];
     this.runningRequests = [];
   };

@@ -7,7 +7,7 @@ module Robotomate
       @queue = :robotomate_daemon_command
       def self.perform(daemon_name, device_id, command, *args)
         daemon = Robotomate::Daemon::all_daemons[daemon_name]
-        d = Device.find(device_id).set_daemon(daemon).send(command, *args)
+        Device.find(device_id).set_daemon(daemon).send(command, *args)
       end
     end
     @@daemons = {}
@@ -15,6 +15,7 @@ module Robotomate
       @@daemons
     end
 
+    attr_reader :name
     # @param [Hash] options the options for initializing this daemon
     # @option options [String] :host the host IP or domain name this daemon will connect to
     # @option options [Integer] :port the port this daemon will connect to
@@ -40,6 +41,7 @@ module Robotomate
     # @param [Symbol] command the command to send, e.g. :on
     # @param [Array] args* any further arguments to the device
     def send_cmd(device, command, *args)
+      # TODO: send immediately if connected
       Resque.enqueue(QueuedCommand, @name, device.id, command, *args)
     end
 
@@ -55,6 +57,7 @@ module Robotomate
       begin
         disconnect
       rescue
+        # ignored
       end
       connect
     end
@@ -68,6 +71,7 @@ module Robotomate
 
     # Attempt to disconnect an already connected socket. Does nothing unless {#connected?} is true
     def disconnect
+      #noinspection RubyControlFlowConversionInspection
       if !connected?
         @connected = false
         @socket.close
@@ -122,7 +126,7 @@ module Robotomate
         if captured[:last]
           captured[:all].push captured[:last]
           captured[:capture] = regex.match(captured[:all].join("\n"))
-          captured[:success] = !!captured[:capture]
+          captured[:success] = captured[:capture] ? true : false
         end
         break if captured[:capture]
         break if (start + ms_timeout < Time.now)

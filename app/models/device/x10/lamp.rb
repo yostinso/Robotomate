@@ -11,7 +11,6 @@ class Device::X10::Lamp < Device::X10
   end
 
   def dim
-    raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :dim)
     if self.off?
       @dim_level = MAX_BRIGHT
@@ -20,7 +19,6 @@ class Device::X10::Lamp < Device::X10
     end
   end
   def bright
-    raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :bright)
     if self.off?
       @dim_level = MAX_BRIGHT

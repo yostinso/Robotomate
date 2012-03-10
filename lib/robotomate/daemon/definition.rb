@@ -1,9 +1,9 @@
 module Robotomate::Daemon::Definition
   class DaemonTemplater
-    def daemon(daemon); @daemon = daemon; end
-    def host(host); @options[:host] = host; end
-    def port(port); @options[:port] = port; end
-    def debug(debug); @options[:debug] = debug; end
+    def daemon(daemon); @daemon = daemon end
+    def host(host); @options[:host] = host end
+    def port(port); @options[:port] = port end
+    def debug(debug); @options[:debug] = debug end
     def initialize(name)
       @options = { :name => name }
     end

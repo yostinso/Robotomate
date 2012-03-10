@@ -21,7 +21,7 @@ namespace :redis do
         # Process not running, good
       end
     end
-    if !running
+    unless running
       exec("redis-server config/redis_devel.conf")
     end
   end
