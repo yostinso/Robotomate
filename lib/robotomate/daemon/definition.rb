@@ -15,5 +15,6 @@ module Robotomate::Daemon::Definition
   def define_daemon(name, &definition)
     dt = DaemonTemplater.new(name)
     dt.instance_eval(&definition)
+    dt.generate
   end
 end

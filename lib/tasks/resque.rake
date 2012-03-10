@@ -8,8 +8,9 @@ namespace :resque do
 end
 
 namespace :redis do
-  REDIS_PID = "/usr/local/var/run/redis.pid"
-  REDIS_CONFIG = "config/redis_devel.conf"
+  REDIS_PID = "/usr/local/var/run/redis.pid" # TODO: allow configuration of infer from conf
+  REDIS_CONFIG = File.join(Rails.root, "config", "redis_development.conf")
+  REDIS_SERVER = "/usr/local/bin/redis-server" # TODO: allow configuration
   task :start do
     running = false
     if File.exists?(REDIS_PID)
@@ -22,7 +23,7 @@ namespace :redis do
       end
     end
     unless running
-      exec("redis-server config/redis_devel.conf")
+      exec(REDIS_SERVER, REDIS_CONFIG)
     end
   end
   task :stop do

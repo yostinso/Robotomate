@@ -3,13 +3,6 @@ module Robotomate
   class Daemon
     class InvalidDevice < ::Exception; end
     class NotConnected < ::Exception; end
-    class QueuedCommand
-      @queue = :robotomate_daemon_command
-      def self.perform(daemon_name, device_id, command, *args)
-        daemon = Robotomate::Daemon::all_daemons[daemon_name]
-        Device.find(device_id).set_daemon(daemon).send(command, *args)
-      end
-    end
     @@daemons = {}
     def self.all_daemons
       @@daemons
@@ -29,8 +22,8 @@ module Robotomate
       @name = options[:name]
       @connected = false
 
-      raise ArgumentError.new("Daemon name '#{@name}' already used by #{self.all_daemons[@name].to_s}") if self.all_daemons[@name]
-      self.all_daemons[@name] = self
+      raise ArgumentError.new("Daemon name '#{@name}' already used by #{Robotomate::Daemon.all_daemons[@name].to_s}") if Robotomate::Daemon.all_daemons[@name]
+      Robotomate::Daemon.all_daemons[@name] = self
     end
 
     # Send a command to a particular device
@@ -41,8 +34,11 @@ module Robotomate
     # @param [Symbol] command the command to send, e.g. :on
     # @param [Array] args* any further arguments to the device
     def send_cmd(device, command, *args)
-      # TODO: send immediately if connected
-      Resque.enqueue(QueuedCommand, @name, device.id, command, *args)
+      if connected?
+        self.send_cmd_to_device(device, command, *args)
+      else
+        Resque.enqueue(QueuedCommand, @name, device.id, command, *args)
+      end
     end
 
     # The connected state of this daemon
