@@ -4,7 +4,7 @@ class Device < ActiveRecord::Base
   @daemon = nil
   attr_accessor :daemon
 
-  def initialize(options)
+  def initialize(options = nil)
     super
     self.daemon = options[:daemon] if options
   end
