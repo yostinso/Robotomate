@@ -9,10 +9,12 @@ class Device::X10 < Device
   end
   def 
   def on
+    raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :on)
     @state = :on
   end
   def off
+    raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :off)
     @state = :off
   end

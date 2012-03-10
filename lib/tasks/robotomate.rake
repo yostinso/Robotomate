@@ -4,8 +4,8 @@ namespace :robotomate do
       require "script/listener.rb"
     end
   end
-  task :enqueue_cmd do
-    cmd = ENV["cmd"]
-
+  task :enqueue_cmd, :cmd, :daemon do |task, args|
+    cmd = args[:cmd] || ENV["cmd"]
+    puts cmd
   end
 end
