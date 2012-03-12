@@ -72,11 +72,14 @@ namespace :robotomate do
       end
     end
   end
-  task :enqueue_cmd, :cmd, :daemon_name, :device_id do |_, args|
+  task :enqueue_cmd, [ :cmd, :daemon_name, :device_id ] => [ :environment,  "redis:start" ] do |_, args|
     cmd = args[:cmd] || ENV["cmd"]
     daemon_name = args[:daemon_name] || ENV["daemon_name"]
     device_id = args[:device_id] || ENV["device_id"]
-    Resque.enqueue(Robotomate::Daemon::QueuedCommand, daemon_name, device_id, cmd)
+    raise ArgumentError.new("cmd, daemon_name, and device_id all required") unless (cmd && daemon_name && device_id)
+    raise ArgumentError.new("Invalid daemon") unless Robotomate::Daemon.all_daemons.has_key?(daemon_name)
+    raise ArgumentError.new("Invalid device") unless Device.exists?(device_id.to_i)
+    Robotomate::Daemon.all_daemons[daemon_name].send_cmd(Device.find(device_id.to_i), cmd)
   end
   task :list_cmds, [ :daemon_name ] => [ :environment, "redis:start" ] do |_, args|
     daemon_name = args[:daemon_name] || ENV["daemon_name"]
@@ -85,10 +88,12 @@ namespace :robotomate do
       return
     end
     jobs = []
+    i = 0
     while true
-      res = Resque.peek(daemon_name, 0, 100)
+      res = Resque.peek(daemon_name, i, 100)
       break if res.empty?
       jobs += res
+      i += 100
     end
     if jobs.empty?
       puts "No tasks for #{daemon_name}"

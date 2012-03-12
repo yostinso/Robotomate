@@ -3,7 +3,10 @@ module Robotomate
   class Daemon
     class InvalidDevice < ::Exception; end
     class NotConnected < ::Exception; end
-    @@daemons = {}
+    @@daemons = HashWithIndifferentAccess.new
+
+    # All of the currently defined daemons (from config/daemons.rb)
+    # @return [Hash{Symbol => Robotomate::Daemon}] a hash of daemon name => daemon
     def self.all_daemons
       @@daemons
     end
@@ -37,7 +40,7 @@ module Robotomate
       if connected?
         self.send_cmd_to_device(device, command, *args)
       else
-        Resque.enqueue(QueuedCommand, @name, device.id, command, *args)
+        Resque.enqueue(Robotomate::Daemon::QueuedCommand.const_get(@name.to_sym), @name, device.id, command, *args)
       end
     end
 
