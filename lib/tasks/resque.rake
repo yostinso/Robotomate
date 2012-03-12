@@ -16,13 +16,13 @@ namespace :redis do
     if File.exists?(REDIS_PID)
       begin
         Process.kill(0, File.read(REDIS_PID).to_i)
-        puts "Redis already running; skipping start"
         running = true
       rescue Errno::ESRCH
         # Process not running, good
       end
     end
     unless running
+      puts "Starting Redis..."
       exec(REDIS_SERVER, REDIS_CONFIG)
     end
   end

@@ -1,12 +1,13 @@
 namespace :robotomate do
   namespace :daemons do
+    desc "Start Resque workers for each of the daemons defined in config/daemons.rb"
     task :start => [ :environment, "redis:start" ] do
       include Spawn
       if File.exists?("/dev/null") && !ENV["DEBUG"]
         Spawn.send(:class_variable_set, :@@logger, Logger.new("/dev/null"))
       end
       queues = Robotomate::Daemon.all_daemons.keys
-      PID_ROOT = File.join(Rails.root, "tmp")
+      PID_ROOT = File.join(Rails.root, "tmp", "pids")
 
       # Backup env vars so we can restore them later
       ENV_VARS = [ "QUEUE", "QUEUES", "PIDFILE", "BACKGROUND" ]
@@ -35,9 +36,11 @@ namespace :robotomate do
         end
       }
     end
+
+    desc "Stop Resque workers for each of the daemons defined in config/daemons.rb"
     task :stop => [ :environment ] do
       queues = Robotomate::Daemon.all_daemons.keys
-      PID_ROOT = File.join(Rails.root, "tmp")
+      PID_ROOT = File.join(Rails.root, "tmp", "pids")
       pids = {}
       puts "Stopping #{queues.join(", ")}"
       queues.each do |queue|
@@ -71,8 +74,43 @@ namespace :robotomate do
         puts "  Failed to stop: " + any_alive.map { |queue, pid| "#{queue} (#{pid})" }.join(", ")
       end
     end
+
+    desc "List the running status of the Resque workers defined in config/daemons.rb; daemon_name is optional"
+    task :status, [ :daemon_name ] => [ :environment, "redis:start" ] do |_, args|
+      include Spawn
+      queues = Robotomate::Daemon.all_daemons.keys
+      PID_ROOT = File.join(Rails.root, "tmp", "pids")
+      daemon_name = args[:daemon_name] || ENV["daemon_name"]
+      if daemon_name.blank?
+        queues.each { |queue|
+          pid_file = File.join(PID_ROOT, "resque_#{queue}.pid")
+          if File.exists?(pid_file)
+            if Spawn.alive?(File.read(pid_file).to_i)
+              puts "#{queue}\trunning"
+            else
+              puts "#{queue}\tdied (pidfile still exists)"
+            end
+          else
+            puts "#{queue}\tstopped"
+          end
+        }
+      else
+        pid_file = File.join(PID_ROOT, "resque_#{daemon_name}.pid")
+        if File.exists?(pid_file)
+          if Spawn.alive?(File.read(pid_file).to_i)
+            puts "running"
+          else
+            puts "died"
+          end
+        else
+          puts "stopped"
+        end
+      end
+    end
   end
-  task :enqueue_cmd, [ :cmd, :daemon_name, :device_id ] => [ :environment,  "redis:start" ] do |_, args|
+
+  desc "Enqueue a command for a particular device and daemon, e.g. robotomate:enqueue[on,Ez_Srve_1,3]"
+  task :enqueue, [ :cmd, :daemon_name, :device_id ] => [ :environment,  "redis:start" ] do |_, args|
     cmd = args[:cmd] || ENV["cmd"]
     daemon_name = args[:daemon_name] || ENV["daemon_name"]
     device_id = args[:device_id] || ENV["device_id"]
@@ -81,33 +119,65 @@ namespace :robotomate do
     raise ArgumentError.new("Invalid device") unless Device.exists?(device_id.to_i)
     Robotomate::Daemon.all_daemons[daemon_name].send_cmd(Device.find(device_id.to_i), cmd)
   end
-  task :list_cmds, [ :daemon_name ] => [ :environment, "redis:start" ] do |_, args|
-    daemon_name = args[:daemon_name] || ENV["daemon_name"]
-    if daemon_name.blank?
-      puts "Please specify daemon_name"
-      return
+  namespace :list do
+    desc "List queued commands; set daemon_name to filter for a specific daemon."
+    task :commands, [ :daemon_name ] => [ :environment, "redis:start" ] do |_, args|
+      daemon_name = args[:daemon_name] || ENV["daemon_name"]
+      if daemon_name.blank?
+        queues = Robotomate::Daemon.all_daemons.keys
+      else
+        queues = daemon_name.split(/,\s*/)
+      end
+      queues.each do |queue|
+        puts queue
+        jobs = []
+        i = 0
+        while true
+          res = Resque.peek(queue, i, 100)
+          break if res.empty?
+          jobs += res
+          i += 100
+        end
+        if jobs.empty?
+          puts "  <no commands queued>"
+        else
+          jobs.each { |job| puts "  #{job["class"]}(#{job["args"].join(", ")})" }
+        end
+      end
     end
-    jobs = []
-    i = 0
-    while true
-      res = Resque.peek(daemon_name, i, 100)
-      break if res.empty?
-      jobs += res
-      i += 100
+    desc "List the daemons configured in config/daemons.rb"
+    task :daemons => [ :environment, "redis:start" ] do |_, args|
+      known_daemons = Robotomate::Daemon.all_daemons.keys
+      queued_daemons = Resque.queues
+      puts "Daemons:"
+      known_daemons.each { |name| puts "  #{name}" }
+      puts "Defunct queues:"
+      (queued_daemons - known_daemons).each { |name| puts "  #{name}" }
     end
-    if jobs.empty?
-      puts "No tasks for #{daemon_name}"
-    else
-      puts jobs.map { |job| job.inspect }.join("\n")
+    desc "List devices from the database."
+    task :devices => [ :environment ] do
+      devices = Device.all.sort { |d1, d2| [d1.type, d1.address, d1.name].join(":") <=> [d2.type, d2.address, d2.name].join(":")}
+      devices = devices.map { |d| [ d.id.to_s, d.type, d.address, d.name ]}
+      devices.unshift([ "ID", "Type", "Address", "Name" ])
+      colwidths = [ 0, 0, 0, 0 ]
+      devices.each { |d|
+        d.each_index { |i| colwidths[i] = [ d[i].length, colwidths[i] ].max }
+      }
+      puts "Devices:"
+      devices.each { |d|
+        puts "  " + [
+          d[0].rjust(colwidths[0]+1) + "   ",
+          d[1].ljust(colwidths[1]+3),
+          d[2].ljust(colwidths[2]+3),
+          d[3]
+        ].join()
+      }
     end
   end
-  task :list_daemons, [ :all ] => [ :environment, "redis:start" ] do |_, args|
-    all = args[:all] || ENV["all"]
-    known_daemons = Robotomate::Daemon.all_daemons.keys
-    queued_daemons = Resque.queues
-    puts "Daemons:"
-    known_daemons.each { |name| puts "  #{name}" }
-    puts "Defunct queues:"
-    puts queued_daemons.inspect
+
+  desc "Remove an entire command queue; use this to either purge a queue or to clean one that is no longer used."
+  task :remove_queue, [ :daemon_name ] => [ :environment, "redis:start" ] do |_, args|
+    daemon_name = args[:daemon_name] || ENV["daemon_name"]
+    Resque.remove_queue(daemon_name)
   end
 end
