@@ -1,7 +1,7 @@
 <%= javascript_include_tag "data_loader" %>
 <script type="text/javascript">
   /* DataLoader */
-  module("DataLoader");
+  module("DataLoader", {});
   test('Basic', function() {
     ok(DataLoader);
     DataLoader.get_json('<%= escape_javascript(url_for(:controller => :device, :action => :show, :id => Device.first)) %>');
