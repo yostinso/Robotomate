@@ -32,7 +32,8 @@ namespace :redis do
     if File.exists?(redis_pid)
       begin
         Process.kill(0, File.read(redis_pid).to_i)
-        raise "Redis already running!"
+        # redis already running
+        next
       rescue Errno::ESRCH
         # Process not running, good
       end
@@ -60,6 +61,10 @@ namespace :redis do
   task :stop => [ :environment ] do
     redis_bin, redis_db_dir, redis_pid, redis_config = get_config()
     puts "Stopping Redis"
-    Process.kill("TERM", File.read(redis_pid).to_i)
+    if File.exists?(redis_pid)
+      Process.kill("TERM", File.read(redis_pid).to_i)
+    else
+      puts "  Couldn't find #{redis_pid}"
+    end
   end
 end

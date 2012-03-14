@@ -1,11 +1,6 @@
 # Read about fixtures at http://api.rubyonrails.org/classes/Fixtures.html
 
-one:
-  address: MyString
-  state: MyText
-  type: 
-
-two:
-  address: MyString
-  state: MyText
-  type: 
+test_device:
+  address: A:1
+  state: off
+  type: Device::X10

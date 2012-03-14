@@ -1,10 +1,5 @@
-require 'pp'
 class Robotomate::Daemon::EZSrve < Robotomate::Daemon
   class BadResponse < ::Exception; end
-
-  def perform_method
-    Proc.new { $stderr.puts "HUH" }
-  end
 
   def send_x10(device, command)
     begin
