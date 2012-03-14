@@ -1,0 +1,16 @@
+test:
+  dir: db/redis/test
+  port: 6831
+  redis_bin: /usr/local/bin/redis-server
+
+development:
+  dir: db/redis/development
+  port: 6830
+  redis_bin: /usr/local/bin/redis-server
+
+production:
+  dir: db/redis/production
+  port: 6830
+  redis_bin: /usr/local/bin/redis-server
+
+
