@@ -1,4 +1,4 @@
-require 'test_helper'
+require 'test/test_helper'
 
 class Robotomate::Daemon::Test < Robotomate::Daemon
   class BadResponse < ::Exception; end
@@ -34,6 +34,31 @@ class QueueTest < ActionDispatch::IntegrationTest
     debug true
   end
 
+  test "interrupt a connected socket and recover" do
+    daemon = Robotomate::Daemon.all_daemons[:Test_Daemon]
+    assert daemon, "could not create test daemon"
+
+    daemon.connect
+    assert daemon.connected?, "could not connect test daemon"
+
+    d = devices(:test_device)
+    daemon.send_cmd(d, :test)
+    collect = daemon.instance_variable_get(:@collect)
+    assert collect, "couldn't get output of test socket"
+    begin
+      res = collect.read_nonblock(1024)
+    rescue
+      res = nil
+    end
+    assert_equal "OK: #{d.id}", res, "didn't send expected message"
+
+    daemon.instance_variable_get(:@socket).close
+    daemon.send_cmd(d, :test)
+
+    collect = daemon.instance_variable_get(:@collect)
+    assert collect, "couldn't get output of test socket"
+    assert_equal "OK: #{d.id}", res, "didn't send expected message"
+  end
   test "enqueue and run a command" do
     # TODO: Make a functional test from everything up to "run worker"
     raise "Redis not configured in the test environment" unless Resque.redis

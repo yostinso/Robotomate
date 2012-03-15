@@ -39,7 +39,15 @@ module Robotomate
     def send_cmd(device, command, *args)
       if connected?
         debug_log "Sending command to device."
-        self.send_cmd_to_device(device, command, *args)
+        begin
+          self.send_cmd_to_device(device, command, *args)
+        rescue IOError => e
+          debug_log "Couldn't send to device; IOError: #{e.inspect}"
+          # requeue and attempt reconnect
+          debug_log "Reconnecting and retrying command"
+          reconnect
+          self.send_cmd_to_device(device, command, *args)
+        end
       else
         debug_log "Enqueuing command from offline daemon."
         Resque.enqueue(Robotomate::Daemon::QueuedCommand.const_get(@name.to_sym), @name, device.id, command, *args)
@@ -66,8 +74,12 @@ module Robotomate
     # Attempt to connect to this daemon's {IO::Socket} on its host and port
     # @see #initialize
     def connect
-      @socket = TCPSocket.open(@host, @port)
-      @connected = true
+      begin
+        @socket = TCPSocket.open(@host, @port)
+        @connected = true
+      rescue Exception => e
+        @connected = false
+      end
     end
 
     # Attempt to disconnect an already connected socket. Does nothing unless {#connected?} is true
