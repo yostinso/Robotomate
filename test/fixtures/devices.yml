@@ -3,4 +3,4 @@
 test_device:
   address: A:1
   state: off
-  type: Device::X10
+  type: TestDevice

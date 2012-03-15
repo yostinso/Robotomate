@@ -38,8 +38,10 @@ module Robotomate
     # @param [Array] args* any further arguments to the device
     def send_cmd(device, command, *args)
       if connected?
+        debug_log "Sending command to device."
         self.send_cmd_to_device(device, command, *args)
       else
+        debug_log "Enqueuing command from offline daemon."
         Resque.enqueue(Robotomate::Daemon::QueuedCommand.const_get(@name.to_sym), @name, device.id, command, *args)
       end
     end
@@ -86,10 +88,10 @@ module Robotomate
     # should have functions defined in the style send_<short_name>_<command>, e.g. send_x10_on.
     #
     # @param [Class] device_klass a subclass of Robotomate::Devices
-    # @return [String] the short name of a device underscored/downcased, e.g. ez_srve
+    # @return [String] the short name of a device underscored/downcased, e.g. x10_lamp
     # @see #send_cmd_to_device
     def short_name(device_klass)
-      device_klass.name.sub(/^Robotomate::Devices::/, '').downcase.gsub(/[^a-z0-9]+/, '_')
+      device_klass.name.sub(/^Robotomate::Devices::/, '').underscore.gsub(/\//, '_')
     end
 
     # Just a wrapper for @socket.print that will optionally log the data being sent
@@ -184,7 +186,7 @@ module Robotomate
       if method_name
         self.send(method_name, device, command, *args)
       else
-        raise NoMethodError.new("No device method send_#{short_name(device)} for #{self.class.name})", "send_#{short_name(device)}")
+        raise NoMethodError.new("No device method send_#{short_name(device.class)} for #{self.class.name})", "send_#{short_name(device.class)}")
       end
     end
 
