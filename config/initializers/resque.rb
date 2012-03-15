@@ -5,3 +5,11 @@ resque_config = YAML.load_file(File.join(rails_root, "config", "resque.yml"))
 Resque.redis = resque_config[rails_env]
 
 REDIS_CONFIG = YAML.load_file(File.join(rails_root, "config", "redis.yml"))
+
+def Resque.logger
+  @@resque_logger ||= Logger.new(File.join(Rails.root, "log", "#{Rails.env}-resque.log"))
+  @@resque_logger
+end
+Resque::Worker.send(:define_method, :log) { |message|
+  Rails.logger.info("resque: #{message}")
+}

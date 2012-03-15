@@ -5,15 +5,19 @@ namespace :robotomate do
       include Spawn
       if File.exists?("/dev/null") && !ENV["DEBUG"]
         Spawn.send(:class_variable_set, :@@logger, Logger.new("/dev/null"))
+      else
+        Spawn.send(:class_variable_set, :@@logger, Rails.logger)
       end
       queues = Robotomate::Daemon.all_daemons.keys
       PID_ROOT = File.join(Rails.root, "tmp", "pids")
 
       # Backup env vars so we can restore them later
-      ENV_VARS = [ "QUEUE", "QUEUES", "PIDFILE", "BACKGROUND" ]
+      ENV_VARS = [ "QUEUE", "QUEUES", "PIDFILE", "BACKGROUND", "INTERVAL" ]
       old_env_vars = ENV_VARS.inject(Hash.new) { |h, v| h[v] = ENV[v]; h }
       ENV.delete("QUEUES")
       ENV.delete("BACKGROUND")
+
+      ENV["INTERVAL"] = old_env_vars["INTERVAL"] || "0.1"
 
       # Start the workers
       puts "Start workers for #{queues.join(", ")}"

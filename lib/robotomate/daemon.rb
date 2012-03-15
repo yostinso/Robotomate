@@ -91,7 +91,7 @@ module Robotomate
     # @return [String] the short name of a device underscored/downcased, e.g. x10_lamp
     # @see #send_cmd_to_device
     def short_name(device_klass)
-      device_klass.name.sub(/^Robotomate::Devices::/, '').underscore.gsub(/\//, '_')
+      device_klass.name.sub(/^Device::/, '').underscore.gsub(/\//, '_')
     end
 
     # Just a wrapper for @socket.print that will optionally log the data being sent
@@ -184,6 +184,7 @@ module Robotomate
       end
 
       if method_name
+        debug_log "  Calling #{method_name}"
         self.send(method_name, device, command, *args)
       else
         raise NoMethodError.new("No device method send_#{short_name(device.class)} for #{self.class.name})", "send_#{short_name(device.class)}")
@@ -192,7 +193,7 @@ module Robotomate
 
     private
     def debug_log(msg)
-      $stderr.puts msg if @debug
+      Rails.logger.info(msg)
     end
     # Get up to one line of data from the device, or as much as can be gathered before the timeout, whichever is
     # lesser (i.e. sooner). Return any data collected.

@@ -24,6 +24,10 @@ class Device::X10 < Device
     @state == :on
   end
 
+  def to_s
+    "X10<#{address}>[#{@state}]"
+  end
+
   private
   def check_valid_address
     # A-P, 1-16

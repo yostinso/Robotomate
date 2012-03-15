@@ -14,6 +14,7 @@ class Robotomate::Daemon::EZSrve < Robotomate::Daemon
   protected
   X10_RESPONSE_MSG = /<Response\s+Name="SendX10"\s+Status="([^"]*)".*<\/Response>/
   def send_x10_on(device)
+    debug_log("Turning on device #{device}")
     msg = x10_message(device, "On")
     self.send_and_verify_x10(msg)
   end
