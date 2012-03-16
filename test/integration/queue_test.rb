@@ -60,12 +60,9 @@ class QueueTest < ActionDispatch::IntegrationTest
     assert_equal "OK: #{d.id}", res, "didn't send expected message"
   end
   test "enqueue and run a command" do
-    # TODO: Make a functional test from everything up to "run worker"
-    raise "Redis not configured in the test environment" unless Resque.redis
-    begin
+    assert Resque.redis, "a test instance of Redis is not running; try RAILS_ENV=test rake redis:start"
+    assert_nothing_raised "cannot connect to Redis in the test environment; try RAILS_ENV=test rake redis:start" do
       Resque.queues
-    rescue Exception => e
-      raise "Cannot connect to Redis in the test environment: #{e.message}"
     end
 
     # Clean queue
