@@ -44,6 +44,14 @@ class Device < ActiveRecord::Base
     s.nil? ? s : s.to_sym
   end
 
+  def extra
+    json = read_attribute(:extra)
+    json.blank? ? {} : JSON.parse(json)
+  end
+  def extra=(hash)
+   write_attribute(:extra, hash.nil? ? {}.to_json : hash.to_json)
+  end
+
   # A helper method for setting the daemon the device will use that will return the device (for jQuery-style chaining)
   #
   # @param daemon the daemon to bind to
