@@ -23,11 +23,15 @@ namespace :robotomate do
       puts "Start workers for #{queues.join(", ")}"
       queues.each do |queue|
         pid_file = File.join(PID_ROOT, "resque_#{queue}.pid")
-        ENV["QUEUE"] = queue.to_s
-        ENV["PIDFILE"] = pid_file
-        puts "  Starting worker on queue #{queue}"
-        Spawn.spawn_block do
-          Rake::Task["resque:work"].execute()
+        if File.exists?(pid_file) && Spawn.alive?(File.read(pid_file).to_i)
+          puts "  Worker already running on queue #{queue}"
+        else
+          ENV["QUEUE"] = queue.to_s
+          ENV["PIDFILE"] = pid_file
+          puts "  Starting worker on queue #{queue}"
+          Spawn.spawn_block do
+            Rake::Task["resque:work"].execute()
+          end
         end
       end
 
@@ -183,5 +187,12 @@ namespace :robotomate do
   task :remove_queue, [ :daemon_name ] => [ :environment, "redis:start" ] do |_, args|
     daemon_name = args[:daemon_name] || ENV["daemon_name"]
     Resque.remove_queue(daemon_name)
+  end
+  desc "Remove all known command queues; won't touch defunct queues"
+  task :remove_queues => [ :environment, "redis:start" ] do
+    queues = Robotomate::Daemon.all_daemons.keys
+    queues.each do |queue|
+      Resque.remove_queue(queue)
+    end
   end
 end
