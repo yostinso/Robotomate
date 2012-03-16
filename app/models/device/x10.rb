@@ -1,3 +1,17 @@
+# == Schema Information
+#
+# Table name: devices
+#
+#  id         :integer         not null, primary key
+#  address    :string(255)
+#  state      :text
+#  type       :string(255)
+#  created_at :datetime
+#  updated_at :datetime
+#  name       :string(255)
+#  extra      :text
+#
+
 class Device::X10 < Device
   before_save :check_valid_address
   JSNAME = "Device.X10"
@@ -10,22 +24,22 @@ class Device::X10 < Device
   def on
     raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :on)
-    @state = :on
+    set_state!(:on)
   end
   def off
     raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :off)
-    @state = :off
+    set_state!(:off)
   end
   def off?
-    @state == :off
+    state == :off
   end
   def on?
-    @state == :on
+    state == :on
   end
 
   def to_s
-    "X10<#{address}>[#{@state}]"
+    "X10<#{address}>[#{state}]"
   end
 
   private

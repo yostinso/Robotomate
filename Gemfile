@@ -25,6 +25,8 @@ end
 
 gem 'jquery-rails'
 
+gem 'annotate', :git => 'git://github.com/ctran/annotate_models.git'
+
 # Use unicorn as the web server
 # gem 'unicorn'
 
