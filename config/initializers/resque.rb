@@ -13,3 +13,8 @@ end
 Resque::Worker.send(:define_method, :log) { |message|
   Rails.logger.info("resque: #{message}")
 }
+
+# This is needed to support mounting the Resque admin interface
+if Rails.env != "test"
+  require 'resque/server'
+end
