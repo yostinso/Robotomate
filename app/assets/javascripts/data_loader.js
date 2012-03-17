@@ -35,12 +35,10 @@
     this.outstandingRequests = [];
     this.runningRequests = [];
   };
-
   DataLoader.prototype.get_json = function(uri, options) {
     var r = new Request(uri, options);
     this.add_request(r);
   };
-
   DataLoader.prototype.add_request = function(request) {
     this.outstandingRequests.push(request);
     this.run_requests();
@@ -60,11 +58,8 @@
       this.runningRequests = $.grep(this.runningRequests, function(r) { return r.started; });
     }
   };
-
   var dataLoader = new DataLoader(); // Singleton
-  
   // Static methods
   DataLoader.get_json = $.proxy(dataLoader.get_json, dataLoader);
-
   window.DataLoader = DataLoader;
 })(jQuery);

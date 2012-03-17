@@ -1,5 +1,6 @@
 class DeviceController < ApplicationController
   before_filter :find_device, :except => [ :index, :new ]
+  before_filter :assign_daemon, :only => [ :on, :off ]
   def show
     if request.xhr? || request.format == "json"
       return render :json => {
@@ -24,7 +25,20 @@ class DeviceController < ApplicationController
   def edit
   end
 
+  def on
+    @device.on
+    redirect_to :controller => :device, :action => :index
+  end
+  def off
+    @device.off
+    redirect_to :controller => :device, :action => :index
+  end
+
   private
+  def assign_daemon
+    daemon = Robotomate::Daemon.all_daemons[:Ez_Srve_121]
+    @device.set_daemon(daemon)
+  end
   def find_device
     begin
       @device = Device.find(params[:id])

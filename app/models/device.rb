@@ -12,44 +12,35 @@
 #  extra      :text
 #
 
+# @attr [Robotomate::Daemon] daemon the daemon through which communication with this device will occur
+# @attr [Boolean] immediate_write (true) )whether or not to immediately update the database when the state changes
 class Device < ActiveRecord::Base
   class NoDaemonException < ::Exception; end
 
-  @daemon = nil
-  attr_accessor :daemon
 
-  def initialize(options = nil)
-    super
-    self.daemon = options[:daemon] if options
-  end
+  attr_accessor :daemon, :immediate_write
+  serialize :extra, Hash
+  before_save :ensure_extra_is_hash
+  after_initialize :ensure_extra_is_hash, :set_instance_vars
 
   # Set the state, converting from a {Symbol} to a {String} if necessary
   # @param [Symbol|String] state the new state
   def state=(state)
     write_attribute(:state, state.to_s)
-  end
-
-  # Set the state and save immediately, using {#state=}
-  # @param [Symbol|String] state the new state
-  # @raise [ActiveRecordError] if the save fails
-  def set_state!(state)
-    self.state = state
-    self.save!
+    self.save! if @immediate_write
   end
 
   # Get the current device state as a {Symbol}
   # @return [Symbol] the current device state
   def state
-    s = self.attributes[:state]
+    s = read_attribute(:state)
     s.nil? ? s : s.to_sym
   end
 
-  def extra
-    json = read_attribute(:extra)
-    json.blank? ? {} : JSON.parse(json)
-  end
-  def extra=(hash)
-   write_attribute(:extra, hash.nil? ? {}.to_json : hash.to_json)
+  # Return the web-ready JSON data for this device
+  # @return [String] JSON data
+  def to_json
+    self.to_h.to_json
   end
 
   # A helper method for setting the daemon the device will use that will return the device (for jQuery-style chaining)
@@ -59,5 +50,14 @@ class Device < ActiveRecord::Base
   def set_daemon(daemon)
     @daemon = daemon
     self
+  end
+
+  private
+  def ensure_extra_is_hash
+    self.extra = Hash.new if self.extra.nil?
+  end
+  def set_instance_vars
+    @daemon = nil
+    @immediate_write = true
   end
 end

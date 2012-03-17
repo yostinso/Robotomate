@@ -24,22 +24,25 @@ class Device::X10 < Device
   def on
     raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :on)
-    set_state!(:on)
+    self.state = :on
   end
   def off
     raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :off)
-    set_state!(:off)
+    self.state = :off
   end
   def off?
-    state == :off
+    self.state == :off
   end
   def on?
-    state == :on
+    self.state == :on
   end
 
   def to_s
     "X10<#{address}>[#{state}]"
+  end
+  def to_h
+    { :state => self.state }
   end
 
   private

@@ -1,4 +1,22 @@
 namespace :robotomate do
+  desc "Start Redis and Resque workers"
+  task :start => [ :environment ] do
+    puts "Starting Redis."
+    Rake::Task["redis:start"].invoke
+    puts "Starting Resque workers..."
+    Rake::Task["robotomate:daemons:start"].invoke
+    puts "Started..."
+  end
+
+  desc "Stop Resque workers and Redis"
+  task :stop => [ :environment ] do
+    puts "Stopping Resque workers..."
+    Rake::Task["robotomate:daemons:stop"].invoke
+    puts "Stopping Redis..."
+    Rake::Task["redis:stop"].invoke
+    puts "Shut down."
+  end
+
   namespace :daemons do
     desc "Start Resque workers for each of the daemons defined in config/daemons.rb"
     task :start => [ :environment, "redis:start" ] do

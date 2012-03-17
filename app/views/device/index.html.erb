@@ -1,94 +1,19 @@
-<% content_for :end_body do %>
-  <script type="text/javascript">
-    // Begin device watchers
-    (function($) {
-      var deviceListeners = [];
-
-      var table = $('TABLE#devices');
-      var make_device = function(id) {
-        var table_row = $(document.createElement('tr')).attr('class', 'device_row').attr('id', 'device_' + id);
-
-        var name_td = $(document.createElement('td'));
-        table_row.append(name_td);
-        var address_td = $(document.createElement('td'));
-        table_row.append(address_td);
-
-        table.append(table_row);
-
-        var d = new Device(id, {
-          name: function(device_name) {
-            var a = $(document.createElement('a')).html(device_name).attr('href', '<%= escape_javascript(url_for( :controller => :device, :action => :show, :id => "%d")) %>'.replace('%d', id));
-            name_td.html(a);
-          },
-          address: address_td
-        });
-        d._table_row = table_row;
-        return d;
-      };
-
-      // Remove devices
-      var remove_device = function(id) {
-        var removed = $.grep(deviceListeners, function(d) { return d.id == id; });
-        deviceListeners = $.grep(deviceListeners, function(d) { return d.id != id; });
-        $(removed).each(function(i, d) {
-          d.stop_refresh();
-          d._table_row.remove();
-        });
-      };
-
-      // Check for new devices
-      var deviceListURI = '<%= escape_javascript(url_for(:params => params, :format => :json)) %>';
-      var checkForNewDevices = function() {
-        DataLoader.get_json(
-          deviceListURI,
-          {
-            success: function(device_ids) {
-              // Remove any devices that no longer exist
-              var i;
-              for (i = deviceListeners.length-1; i >= 0; i--) {
-                if ($.inArray(deviceListeners[i].id, device_ids) < 0) {
-                  remove_device(deviceListeners[i].id);
-                }
-              }
-              // Add any new devices
-              for (i in device_ids) {
-                if ($.grep(deviceListeners, function(d) { return d.id == device_ids[i]; }).length == 0) {
-                  deviceListeners.push(make_device(device_ids[i]));
-                }
-              }
-            }
-          }
-        );
-      };
-
-      var timer;
-      var startTimer = function() {
-        clearInterval(timer);
-        checkForNewDevices();
-        timer = setInterval(checkForNewDevices, 5000);
-        $(deviceListeners).each(function(i, d) { d.start_refresh(); });
-      };
-      var stopTimer = function() {
-        clearInterval(timer);
-        timer = undefined;
-        $(deviceListeners).each(function(i, d) { d.stop_refresh(); });
-      };
-      $(document).ready(function() { startTimer(); });
-      $('.stop_refresh.devices').click(function() {
-        if (timer) {
-          stopTimer();
-          $(this).html("Start Updating");
-        } else {
-          startTimer();
-          $(this).html("Stop Updating");
+<script type="text/javascript">
+  jQuery(document).ready(function() {
+    var fieldNames = Device.fieldNames();
+    var i;
+    for (i in fieldNames) {
+        if (fieldNames[i].field == "state") {
+            fieldNames[i].mappingCallback = function(val) {
+                var newval = (val == "on") ? "off" : "on";
+                if (val != "off" && val != "on") { val = "unknown"; }
+                return '<a href="/device/' + this.id + '/' + newval + '">' + val + '</a>';
+            };
         }
-      });
-    })(jQuery);
-  </script>
-<% end %>
-
-<table id="devices" border="1">
-  <tr><th>Name</th><th>Address</th></tr>
-</table>
+    }
+    new DataTable("DIV#devices", Device, fieldNames);
+  });
+</script>
+<div id="devices">nothing?</div>
 
 <a class="stop_refresh devices" href="#">Stop Updating</a>

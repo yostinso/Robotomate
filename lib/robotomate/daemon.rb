@@ -77,7 +77,7 @@ module Robotomate
       begin
         @socket = TCPSocket.open(@host, @port)
         @connected = true
-      rescue Exception => e
+      rescue Exception
         @connected = false
       end
     end
