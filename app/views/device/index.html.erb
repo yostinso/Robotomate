@@ -11,7 +11,16 @@
             };
         }
     }
-    new DataTable("DIV#devices", Device, fieldNames);
+    var dt = new DataTable("DIV#devices", Device, fieldNames);
+    $('.stop_refresh.devices').click(function() {
+        if ($(this).html() == "Stop Updating") {
+            dt.stop_refresh();
+            $(this).html("Start Updating");
+        } else {
+            dt.start_refresh();
+            $(this).html("Stop Updating");
+        }
+    });
   });
 </script>
 <div id="devices">nothing?</div>

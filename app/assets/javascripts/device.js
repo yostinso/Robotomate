@@ -1,5 +1,5 @@
 (function($) {
-  var DEFAULT_REFRESH_INTERVAL = 5000; // milliseconds; set to 0 for no refresh
+  var DEFAULT_REFRESH_INTERVAL = 500; // milliseconds; set to 0 for no refresh
   var DataElement = function(options) {
     this.options = options || {};
     this.refreshInterval = (this.options.refresh == undefined) ? DEFAULT_REFRESH_INTERVAL : this.options.refresh;
@@ -50,15 +50,15 @@
   };
   DataElement.prototype.do_refresh = function() {
     var uri = this.uri;
-    DataLoader.get_json(uri, {
-      success: $.proxy(function(result) {
+    DataLoader.add_request(new IdRequest(
+      this.uri, this.id, $.proxy(function(result) {
         var field;
         for (field in result) {
           this.fieldValues[field] = result[field];
         }
         this.update();
       }, this)
-    });
+    ));
   };
   DataElement.prototype.bind_to = function(fieldname, binding_info) {
     var element_or_callback = binding_info;
@@ -130,11 +130,13 @@
 })(jQuery);
 
 (function($) {
-  var DEVICE_URI_TEMPLATE = "/device/%d";
+  //var DEVICE_URI_TEMPLATE = "/device/%d";
+  var DEVICE_URI_TEMPLATE = "/device/show.json";
   var DEVICE_LIST_URI = "/device.json";
   var Device = function(id, options) {
     this.id = id;
-    this.uri = DEVICE_URI_TEMPLATE.replace('%d', this.id);
+    //this.uri = DEVICE_URI_TEMPLATE.replace('%d', this.id);
+    this.uri = DEVICE_URI_TEMPLATE;
     $.proxy(DataElement, this)(options);
   };
   Device.prototype = DataElement.prototype;
@@ -217,13 +219,17 @@
     clearTimeout(this.timer);
     this.timer = undefined;
     this.start_refresh(0);
+    var i;
+    for (i in this.elements_) {
+      this.elements_[i].stop_refresh();
+    }
   };
   DataTable.prototype.start_refresh = function(new_refresh) {
     if (new_refresh != undefined) {
       this.refreshInterval = new_refresh;
     } else if (this.timer == undefined && this.refreshInterval <= 0) {
       // Restart with defaults
-      this.refreshInterval = (this.options.refresh == undefined) ? DEFAULT_REFRESH_INTERVAL : this.options.refresh;
+      this.refreshInterval = DEFAULT_REFRESH_INTERVAL;
     }
     if (this.refreshInterval <= 0) { return; }
 
@@ -240,6 +246,9 @@
         ),
         this.refreshInterval
       );
+      for (i in this.elements_) {
+        this.elements_[i].start_refresh();
+      }
     }
   };
   window.DataTable = DataTable;
