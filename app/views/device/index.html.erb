@@ -1,28 +1,37 @@
+<%= javascript_include_tag "remote_event_manager" %>
 <script type="text/javascript">
   jQuery(document).ready(function() {
-    var fieldNames = Device.fieldNames();
-    var i;
-    for (i in fieldNames) {
-        if (fieldNames[i].field == "state") {
-            fieldNames[i].mappingCallback = function(val) {
-                var newval = (val == "on") ? "off" : "on";
-                if (val != "off" && val != "on") { val = "unknown"; }
-                return '<a href="/device/' + this.id + '/' + newval + '">' + val + '</a>';
-            };
-        }
-    }
-    var dt = new DataTable("DIV#devices", Device, fieldNames);
-    $('.stop_refresh.devices').click(function() {
-        if ($(this).html() == "Stop Updating") {
-            dt.stop_refresh();
-            $(this).html("Start Updating");
-        } else {
-            dt.start_refresh();
-            $(this).html("Stop Updating");
-        }
-    });
+      var addDevice = function(e, d) {
+          if (e.type == "add") {
+              console.log("Add Device: " + d);
+          } else if (e.type == "state_changed") {
+              console.log("Device " + d.id + " state changed to " + d.state)
+          }
+      };
+
+      RemoteEventManager.start(
+              '<%= escape_javascript(url_for(:controller => :event, :action => :poll, :uuid => @this_page_uuid)) %>',
+              '<%= escape_javascript(url_for(:controller => :event, :action => :subscribe, :uuid => @this_page_uuid)) %>'
+      );
+
+      RemoteEventManager.subscribe(Device, 'add', null, addDevice);
+      RemoteEventManager.subscribe(Device, 'remove', null, addDevice);
+      RemoteEventManager.subscribe(Device, 'state_changed', 1, addDevice);
+      RemoteEventManager.subscribe(Device, 'state_changed', 2, addDevice);
+      RemoteEventManager.subscribe(Device, 'state_changed', 1, addDevice);
+
+      $('.stop_refresh').click(function() {
+          if ($(this).html() == "Stop Updating") {
+              RemoteEventManager.stop();
+              $(this).html("Start Updating");
+          } else {
+              RemoteEventManager.start();
+              $(this).html("Stop Updating");
+          }
+      });
   });
 </script>
 <div id="devices">nothing?</div>
 
-<a class="stop_refresh devices" href="#">Stop Updating</a>
+<%= link_to "Debug", :controller => :event, :action => :debug, :uuid => @this_page_uuid %><br />
+<a class="stop_refresh" href="#">Stop Updating</a>

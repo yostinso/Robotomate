@@ -1,5 +1,14 @@
 Robotomate::Application.routes.draw do
+  post "event/subscribe/:uuid" => 'event#subscribe'
+  get "event/poll/:uuid" => 'event#poll'
+
+  if Rails.env == "development" || Rails.env == "test"
+    get "event/subscribe" # debug
+    get "event/debug/:uuid" => 'event#debug'
+  end
+
   resources :device
+  match 'device/' => 'device#index'
   match 'device/:id/on' => 'device#on'
   match 'device/:id/off' => 'device#off'
 
