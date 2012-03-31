@@ -1,24 +1,21 @@
-<%= javascript_include_tag "remote_event_manager" %>
+<%= javascript_include_tag "remote_event_proxy" %>
 <script type="text/javascript">
   jQuery(document).ready(function() {
       var addDevice = function(e, d) {
-          if (e.type == "add") {
-              console.log("Add Device: " + d);
-          } else if (e.type == "state_changed") {
-              console.log("Device " + d.id + " state changed to " + d.state)
-          }
+          var device = new Device(d);
+          RemoteEventManager.subscribe(Device, 'state_changed', d.id, device.update);
+      };
+      var removeDevice = function(e, d) {
+          var device = new Device(d);
+          RemoteEventManager.subscribe(Device, 'state_changed', d.id, device.update);
       };
 
-      RemoteEventManager.start(
-              '<%= escape_javascript(url_for(:controller => :event, :action => :poll, :uuid => @this_page_uuid)) %>',
-              '<%= escape_javascript(url_for(:controller => :event, :action => :subscribe, :uuid => @this_page_uuid)) %>'
-      );
+
+      <%= start_remote_event_manager() %>
 
       RemoteEventManager.subscribe(Device, 'add', null, addDevice);
-      RemoteEventManager.subscribe(Device, 'remove', null, addDevice);
-      RemoteEventManager.subscribe(Device, 'state_changed', 1, addDevice);
-      RemoteEventManager.subscribe(Device, 'state_changed', 2, addDevice);
-      RemoteEventManager.subscribe(Device, 'state_changed', 1, addDevice);
+      RemoteEventManager.subscribe(Device, 'remove', null, removeDevice);
+      // RemoteEventManager.subscribe(Device, 'state_changed', 1, addDevice);
 
       $('.stop_refresh').click(function() {
           if ($(this).html() == "Stop Updating") {

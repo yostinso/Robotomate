@@ -52,17 +52,17 @@
   };
   Subscriptions.prototype.to_data = function() {
     var data_hash = {};
-    var i, namespace, event, subs_list;
-    for (namespace in this.data) {
+    var event, subs_list;
+    for (var namespace in this.data) {
       subs_list = [];
-      for (i in this.data[namespace]) {
+      for (var i in this.data[namespace]) {
         event = this.data[namespace][i];
         subs_list.push(event.event + ((event.id == undefined || event.id == null) ? '' : ' ' + event.id));
       }
       data_hash[namespace] = subs_list.join(";");
     }
     return data_hash;
-  }
+  };
 
   var RemoteEvent = function(namespace, name, options) {
     this.namespace = namespace;
@@ -75,7 +75,7 @@
     target.triggerHandler(this.name + "." + this.namespace, this.data);
   };
 
-  var RemoteEventManager = function(poll_url, subscription_url, timeout) {
+  var RemoteEventProxy = function(poll_url, subscription_url, timeout) {
     this.poll_url = poll_url;
     this.subscription_url = subscription_url;
     this.subscriptions = new Subscriptions();
@@ -84,25 +84,25 @@
     this.min_subscription_wait = 1000; // wait 3 second minimum between queries
     singleton = this;
   };
-  RemoteEventManager.prototype.parseEvents = function(data, status, xhr) {
-    var i, remote_event;
+  RemoteEventProxy.prototype.parseEvents = function(data) {
+    var remote_event;
 
-    for (i in data) {
+    for (var i in data) {
       remote_event = new RemoteEvent(data[i].namespace, data[i].event, data[i].options);
       remote_event.raise(this);
     }
   };
-  RemoteEventManager.prototype.start = function() {
+  RemoteEventProxy.prototype.start = function() {
     if (!this.running) {
       this.running = true;
       this.last_request = undefined;
       this.waitForEvents();
     }
   };
-  RemoteEventManager.prototype.stop = function() {
+  RemoteEventProxy.prototype.stop = function() {
     this.running = false;
   };
-  RemoteEventManager.prototype.updateSubscriptions = function() {
+  RemoteEventProxy.prototype.updateSubscriptions = function() {
     if (this.last_subscription_update && (Date.now() - this.last_subscription_update < this.min_subscription_wait)) {
       // We just ran one, so queue this to run soon
       if (this.outstanding_subscription_update) { return; } // Already queued up
@@ -119,10 +119,10 @@
       global: false,
       context: this,
       type: 'POST',
-      error: function(xhr, status) { console.log("Unable to update subscriptions"); }
+      error: function() { console.log("Unable to update subscriptions"); }
     });
   };
-  RemoteEventManager.prototype.waitForEvents = function() {
+  RemoteEventProxy.prototype.waitForEvents = function() {
     if (!this.running) { return; }
     if (this.last_request && (Date.now() - this.last_request < this.min_wait)) {
       setTimeout($.proxy(this.waitForEvents, this), this.min_wait - (Date.now() - this.last_request) + 50);
@@ -155,9 +155,9 @@
    * @param id (optional; required for some event types) an identifier or filter for the event subscription (e.g. a model ID)
    * @param {Function} callback (optional) immediately set up a binding to call callback when the event fires, expect
    *        the callback will get the event as the first argument and any updated data as the second argument
-   * @see Subscriptions#add
+   * @see Subscriptions.add
    */
-  RemoteEventManager.prototype.subscribe = function (namespace_or_model, event, id, callback) {
+  RemoteEventProxy.prototype.subscribe = function (namespace_or_model, event, id, callback) {
     var namespace = typeof(namespace_or_model) == "string" ? namespace_or_model : namespace_or_model.namespace;
     if (callback) {
       $(this).bind(event + "." + namespace, callback);
@@ -165,7 +165,7 @@
     this.subscriptions.add(namespace, event, id);
     this.updateSubscriptions();
   };
-  RemoteEventManager.prototype.unsubscribe = function(namespace_or_model, event, id) {
+  RemoteEventProxy.prototype.unsubscribe = function(namespace_or_model, event, id) {
     var namespace = typeof(namespace_or_model) == "string" ? namespace_or_model : namespace_or_model.namespace;
     this.subscriptions.remove(namespace, event, id);
     if (id == undefined || !this.subscriptions.subscribed_to(namespace, event)) {
@@ -174,22 +174,22 @@
     }
     this.updateSubscriptions();
   };
-  RemoteEventManager.start = function(url, timeout) {
+  RemoteEventProxy.start = function(url, timeout) {
     if (!singleton) {
-      singleton = new RemoteEventManager(url, timeout);
+      singleton = new RemoteEventProxy(url, timeout);
     }
     singleton.start();
     return singleton;
   };
-  RemoteEventManager.stop = function() {
+  RemoteEventProxy.stop = function() {
     if (singleton) { singleton.stop(); }
   };
-  RemoteEventManager.subscribe = function(namespace_or_model, event, id, callback) {
+  RemoteEventProxy.subscribe = function(namespace_or_model, event, id, callback) {
     singleton.subscribe(namespace_or_model, event, id, callback);
   };
-  RemoteEventManager.unsubscribe = function(namespace_or_model, event, id) {
+  RemoteEventProxy.unsubscribe = function(namespace_or_model, event, id) {
     singleton.unsubscribe(namespace_or_model, event, id);
   };
 
-  window.RemoteEventManager = RemoteEventManager;
+  window.RemoteEventManager = RemoteEventProxy;
 })(jQuery);
