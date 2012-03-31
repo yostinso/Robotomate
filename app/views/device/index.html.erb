@@ -1,23 +1,20 @@
 <%= javascript_include_tag "remote_event_proxy" %>
 <script type="text/javascript">
   jQuery(document).ready(function() {
-      var data_table = window.t = new DataTable($('#devices'), {
-
-      });
+      var data_table = window.t = new DataTable($('#devices'), {});
 
       var addDevice = function(e, d) {
-          var device = new Device(d);
+          var device = Device.create(d);
           device.setTable(data_table);
           RemoteEventProxy.subscribe(Device, 'state_changed', d.id, $.proxy(device.update, device));
       };
       var removeDevice = function(e, d) {
-          var device = new Device(d);
+          var device = Device.create(d);
           data_table.removeRow(device);
           RemoteEventProxy.unsubscribe(Device, 'state_changed', d.id);
       };
 
       <%= start_remote_event_proxy() %>
-
       RemoteEventProxy.subscribe(Device, 'add', null, addDevice);
       RemoteEventProxy.subscribe(Device, 'remove', null, removeDevice);
 
@@ -34,5 +31,4 @@
 </script>
 <div id="devices">nothing?</div>
 
-<%= link_to "Debug", :controller => :event, :action => :debug, :uuid => @this_page_uuid %><br />
 <a class="stop_refresh" href="#">Stop Updating</a>

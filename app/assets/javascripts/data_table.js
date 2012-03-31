@@ -31,7 +31,8 @@
       }
     }
   };
-  DataRow.prototype.content = function() {
+  DataRow.prototype.content = function(expected_columns) {
+    this.expected_columns = (expected_columns == undefined) ? this.expected_columns : expected_columns;
     if (!this._content) {
       this._content = {
         tr: $(document.createElement('tr')),
@@ -52,6 +53,11 @@
     for (i in this.field_order) {
       name = this.field_order[i][0];
       if (this.fields.hasOwnProperty(name)) { this._content.tr.append(this._content.fields[name]); }
+    }
+    i++;
+    while (i < (expected_columns || 0)) {
+      this._content.tr.append( $(document.createElement('td')).addClass('empty') );
+      i++;
     }
 
     return this._content.tr;
@@ -104,19 +110,30 @@
   };
   DataTable.prototype.refresh = function() {
     if (this.sorted) { this.data.sort(this.sort_func); }
-    var i;
     if (this.data.length > 0) {
+      var i, j, k, headers = [], seen_headers = {};
+      for (i in this.data) {
+        for (j in this.data[i].field_order) {
+          k = 0;
+          j = parseInt(j);
+          var header = this.data[i].field_order[j];
+          if (seen_headers[header[0]]) { continue; }
+          seen_headers[header[0]] = true;
+          while (headers[j+k] != undefined) { k++; }
+          headers[j+k] = header;
+        }
+      }
       this._content.header.html("");
-      for (i in this.data[0].field_order) {
+      for (i in headers) {
         $(document.createElement('th'))
-          .html(this.data[0].field_order[i][1])
+          .html(headers[i][1])
+          .addClass(headers[i][0])
           .appendTo(this._content.header);
       }
     }
-    this._content.header
     this._content.body.html(""); // TODO maybe don't have to clear this out? (remove missing, append otherwise)
     for (i in this.data) {
-      this._content.body.append(this.data[i].content());
+      this._content.body.append(this.data[i].content(headers.length));
     }
   };
   DataTable.prototype.addRow = function(data_row, maintain_unique) {

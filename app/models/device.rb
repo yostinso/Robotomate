@@ -17,6 +17,8 @@
 class Device < ActiveRecord::Base
   class NoDaemonException < ::Exception; end
 
+  validates_exclusion_of :type, :in => %w(Device), :message => "Cannot create an abstract Device"
+  validates_presence_of :type, :message => "Cannot create an abstract Device with no type"
 
   attr_accessor :daemon, :immediate_write
   serialize :extra, Hash

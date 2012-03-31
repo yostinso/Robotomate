@@ -23,6 +23,25 @@
       this.refresh();
     }
   };
-
+  Device.create = function(device_hash) {
+    var klass = Device;
+    if (device_hash.type) {
+      var subklasses = device_hash.type.split(/\./);
+      while (subklasses.length > 0) {
+        var type_name = subklasses.join(".");
+        try {
+          klass = eval(type_name);
+          if (typeof(klass) != "undefined") {
+            break;
+          } else {
+          }
+        } catch (e) {
+          klass = Device;
+        }
+        subklasses.pop();
+      }
+    }
+    return new klass(device_hash);
+  };
   window.Device = Device;
 })();

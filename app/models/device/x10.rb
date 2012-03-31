@@ -42,7 +42,12 @@ class Device::X10 < Device
     "X10<#{address}>[#{state}]"
   end
   def to_h
-    { :id => self.id, :name => self.name, :state => self.state }
+    { :id => self.id, :name => self.name, :state => self.state, :type => self.js_type }
+  end
+
+  protected
+  def js_type
+    self.type.gsub(/::/, '.')
   end
 
   private
