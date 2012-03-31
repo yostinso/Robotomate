@@ -15,7 +15,7 @@
    * @param id (optional; required for some event types) an identifier or filter for the event subscription (e.g. a model ID)
    */
   Subscriptions.prototype.add = function(namespace, event, id) {
-    if (!namespace) { throw("No namespace provided!"); }
+    if (!namespace) { throw("No namespace provided for " + event + "!"); }
     this.data[namespace] = this.data[namespace] || [];
     var exists = $.grep(this.data[namespace], function(e) {
       return e.event == event && e.id == id
@@ -68,7 +68,6 @@
     this.namespace = namespace;
     this.name = name;
     this.data = options;
-    delete this.data['id'];
   };
   RemoteEvent.prototype.raise = function(target) {
     target = $(target) || $(this);
@@ -151,7 +150,7 @@
    *
    * @param namespace_or_model
    * @param {String} namespace_or_model the namespace for the subscription, or an object that responds to .namespace
-   * @param {String} event the name of the event to subscribe to
+   * @param {String} .delete(d.id)event the name of the event to subscribe to
    * @param id (optional; required for some event types) an identifier or filter for the event subscription (e.g. a model ID)
    * @param {Function} callback (optional) immediately set up a binding to call callback when the event fires, expect
    *        the callback will get the event as the first argument and any updated data as the second argument
@@ -191,5 +190,5 @@
     singleton.unsubscribe(namespace_or_model, event, id);
   };
 
-  window.RemoteEventManager = RemoteEventProxy;
+  window.RemoteEventProxy = RemoteEventProxy;
 })(jQuery);

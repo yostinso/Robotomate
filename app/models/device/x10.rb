@@ -42,12 +42,12 @@ class Device::X10 < Device
     "X10<#{address}>[#{state}]"
   end
   def to_h
-    { :state => self.state }
+    { :id => self.id, :name => self.name, :state => self.state }
   end
 
   private
   def check_valid_address
     # A-P, 1-16
-    return self.address.match(/^[A-P]:([1-9]|1[0-6])$/) ? true : false
+    return !self.address.blank? && self.address.match(/^[A-P]:([1-9]|1[0-6])$/) ? true : false
   end
 end
