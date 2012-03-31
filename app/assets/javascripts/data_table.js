@@ -23,6 +23,7 @@
     this.fields = fields;
     this.field_order = options.field_order;
     this.primary_key_name = options.primary_key || 'id';
+    this.renderers = options.renderers || {};
     this.primary_key = this.fields[this.primary_key_name];
     if (!this.field_order) {
       for (var name in this.fields) {
@@ -44,7 +45,7 @@
         var col = (
           this._content.fields[name] || (this._content.fields[name] = $(document.createElement('td')).addClass(name))
           );
-        col.html(this.fields[name]);
+        col.html(this.renderers[name] ? this.renderers[name](this, this.fields[name]) : this.fields[name]);
       }
     }
     this._content.tr.html(""); // TODO maybe don't have to clear this out? (remove missing, append otherwise)
