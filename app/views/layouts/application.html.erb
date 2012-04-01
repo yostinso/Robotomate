@@ -11,6 +11,10 @@
   <%= javascript_include_tag "device.x10" %>
   <%= javascript_include_tag "device.x10.lamp" %>
   <%= csrf_meta_tags %>
+
+  <script type="text/javascript">
+    Device.X10.Lamp.BULB_ICON = '<%= escape_javascript(image_path("device_icons/bulb.svg")) %>';
+  </script>
   <%= yield :header %>
 </head>
 <body>

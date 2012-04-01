@@ -1,7 +1,7 @@
 require 'pp'
 class EventController < ApplicationController
   MAX_SUBSCRIBED_PAGES = 10
-  MAX_POLL_TIME = 30 # 30 second poll time
+  MAX_POLL_TIME = 5 # 30 second poll time
   append_before_filter :find_or_create_subscription, :only => [ :subscribe ]
   append_after_filter :write_back_session, :only => [ :subscribe ]
 

@@ -43,5 +43,19 @@
     }
     return new klass(device_hash);
   };
+  Device.addDevice = function(e, d, data_table) {
+    var data_table = data_table || Device.default_data_table;
+    var device = Device.create(d);
+    device.setTable(data_table);
+    RemoteEventProxy.subscribe(Device, 'state_changed', d.id, $.proxy(device.update, device));
+  };
+  Device.removeDevice = function(e, d, data_table) {
+    var data_table = data_table || Device.default_data_table;
+    var device = Device.create(d);
+    data_table.removeRow(device);
+    RemoteEventProxy.unsubscribe(Device, 'state_changed', d.id);
+  };
+
+
   window.Device = Device;
 })();
