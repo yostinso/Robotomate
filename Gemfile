@@ -22,12 +22,12 @@ group :assets do
   gem 'coffee-rails', "~> 3.1.0"
   gem 'uglifier'
 end
-
 gem 'jquery-rails'
-
 gem 'annotate', :git => 'git://github.com/ctran/annotate_models.git'
-
 gem 'uuid'
+
+# Support for the LESS CSS framework (used by Bootstrap)
+gem 'less-rails-bootstrap', '~> 2.0.8'
 
 # Use unicorn as the web server
 # gem 'unicorn'

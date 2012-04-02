@@ -7,3 +7,6 @@
 //= require jquery
 //= require jquery_ujs
 //= require_tree .
+//
+// Twitter Bootstrap via less-rails-bootstrap gem
+//= require twitter/bootstrap

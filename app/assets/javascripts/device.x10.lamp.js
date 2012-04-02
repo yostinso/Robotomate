@@ -11,6 +11,7 @@
       $(document.createElement('img'))
         .attr('src', Device.X10.Lamp.BULB_ICON)
         .attr('alt', val)
+        .attr('title', val + "/" + Device.X10.Lamp.MAX_BRIGHT)
         .appendTo(container);
       return container;
     };
