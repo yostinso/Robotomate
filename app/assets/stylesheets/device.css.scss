@@ -2,9 +2,51 @@
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
+@mixin color-by-percent($level, $max, $dark, $bright) {
+  &.level_#{$level} { background-color: mix($bright, $dark, ($level/$max)*100); }
+};
+
 TABLE.data_table {
   border-collapse: collapse;
   TD {
     border: 1px solid black;
   }
+  DIV.x10_lamp_brightness {
+    $bulb_ratio: 58/100;
+    $height: 2em;
+
+    width: $height*$bulb_ratio;
+    height: $height;
+    padding: 0;
+    margin: 0;
+
+    IMG {
+      padding: 0;
+      margin: 0;
+      width: $height*$bulb_ratio;
+      height: $height;
+    };
+
+    $dark: #000000;
+    $bright: #eedd82;
+    @include color-by-percent(0, 18, $dark, $bright);
+    @include color-by-percent(1, 18, $dark, $bright);
+    @include color-by-percent(2, 18, $dark, $bright);
+    @include color-by-percent(3, 18, $dark, $bright);
+    @include color-by-percent(4, 18, $dark, $bright);
+    @include color-by-percent(5, 18, $dark, $bright);
+    @include color-by-percent(6, 18, $dark, $bright);
+    @include color-by-percent(7, 18, $dark, $bright);
+    @include color-by-percent(8, 18, $dark, $bright);
+    @include color-by-percent(9, 18, $dark, $bright);
+    @include color-by-percent(10, 18, $dark, $bright);
+    @include color-by-percent(11, 18, $dark, $bright);
+    @include color-by-percent(12, 18, $dark, $bright);
+    @include color-by-percent(13, 18, $dark, $bright);
+    @include color-by-percent(14, 18, $dark, $bright);
+    @include color-by-percent(15, 18, $dark, $bright);
+    @include color-by-percent(16, 18, $dark, $bright);
+    @include color-by-percent(17, 18, $dark, $bright);
+    @include color-by-percent(18, 18, $dark, $bright);
+  };
 }

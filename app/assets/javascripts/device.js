@@ -23,6 +23,12 @@
       this.refresh();
     }
   };
+  Device.prototype.subscribe = function(remote_event_proxy) {
+    remote_event_proxy.subscribe(Device, 'state_changed', this.fields.id, $.proxy(this.update, this));
+  };
+  Device.prototype.unsubscribe = function(remote_event_proxy) {
+    remote_event_proxy.unsubscribe(Device, 'state_changed', this.fields.id);
+  };
   Device.create = function(device_hash) {
     var klass = Device;
     if (device_hash.type) {
@@ -47,13 +53,13 @@
     var data_table = data_table || Device.default_data_table;
     var device = Device.create(d);
     device.setTable(data_table);
-    RemoteEventProxy.subscribe(Device, 'state_changed', d.id, $.proxy(device.update, device));
+    device.subscribe(RemoteEventProxy);
   };
   Device.removeDevice = function(e, d, data_table) {
     var data_table = data_table || Device.default_data_table;
     var device = Device.create(d);
     data_table.removeRow(device);
-    RemoteEventProxy.unsubscribe(Device, 'state_changed', d.id);
+    device.unsubscribe(RemoteEventProxy);
   };
 
 

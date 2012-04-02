@@ -43,16 +43,16 @@ class EventController < ApplicationController
   private
   def update_device_state
     changes = []
+    devices = []
     subs = @subscription[:subscription]["device"]
     state = (@subscription[:known_state]["device"] ||= {})
-    if subs[:add] || subs[:remove] || subs[:state_changed] == :all
-      all_devices = []
+    if subs[:add] || subs[:remove] || subs[:state_changed] == :all || subs[:dim_level_changed] == :all
       Device.uncached do
-        all_devices = Device.all # TODO: all for this user
+        devices = Device.all # TODO: all for this user
       end
 
       # New devices
-      all_devices.each { |d|
+      devices.each { |d|
         if !state[d.id]
           changes.push({
             :namespace => "device",
@@ -64,28 +64,39 @@ class EventController < ApplicationController
       }
 
       # Removed devices
-      removed_devices = state.keys - all_devices.map { |d| d.id }
+      removed_devices = state.keys - devices.map { |d| d.id }
       removed_devices.each { |d_id| state.delete(d_id) }
 
       changes += removed_devices.map { |d_id| { :namespace => "device", :event => :remove, :options => { :id => d_id } } }
     end
-    if subs[:state_changed] && subs[:state_changed] != :all
-      devices = []
+
+    dim_ids = Array.wrap(subs[:dim_level_changed]).compact.inject(Hash.new) { |h, i| h[i.to_i] = true; h }
+    state_ids = Array.wrap(subs[:state_changed]).compact.inject(Hash.new) { |h, i| h[i.to_i] = true; h }
+    if  (subs[:state_changed] || subs[:dim_level_changed]) && devices.empty?
       Device.uncached do
-        devices = subs[:state_changed].map { |i| Device.find_by_id(i.to_i) }.compact
+        devices = (state_ids.keys + dim_ids.keys).uniq.map { |i| Device.find_by_id(i.to_i) }.compact
       end
-      devices.each { |d|
-        state[d.id] ||= {}
-        if state[d.id][:state] != d.state
-          changes.push({
-            :namespace => "device",
-            :event => :state_changed,
-            :options => d.to_h
-          })
-          state[d.id] = d.to_h
-        end
-      }
     end
+
+    devices.each { |d|
+      state[d.id] ||= {}
+      if state_ids.has_key?(d.id) && state[d.id][:state] != d.state
+        changes.push({
+          :namespace => "device",
+          :event => :state_changed,
+          :options => d.to_h
+        })
+        state[d.id][:state] = d.state
+      end
+      if dim_ids.has_key?(d.id) && state[d.id][:dim_level] != d.dim_level
+        changes.push({
+                         :namespace => "device",
+                         :event => :dim_level_changed,
+                         :options => d.to_h
+                     })
+        state[d.id][:dim_level] = d.dim_level
+      end
+    }
     changes
   end
   def find_or_create_subscription

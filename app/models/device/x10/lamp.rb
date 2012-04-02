@@ -68,6 +68,9 @@ class Device::X10::Lamp < Device::X10
   end
 
 
+  def dim_level
+    extra[:dim_level]
+  end
   protected
   def reset_dim
     if self.dim_level.nil?
@@ -77,9 +80,6 @@ class Device::X10::Lamp < Device::X10
   def reset_dim!
     self.off if @state != :off
     self.on
-  end
-  def dim_level
-    extra[:dim_level]
   end
   def dim_level=(level)
     extra[:dim_level] = level
