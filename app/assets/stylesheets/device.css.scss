@@ -3,7 +3,9 @@
 // You can use Sass (SCSS) here: http://sass-lang.com/
 
 @mixin color-by-percent($level, $max, $dark, $bright) {
-  &.level_#{$level} { background-color: mix($bright, $dark, ($level/$max)*100); }
+  $percent: log_percent(($level/$max)*100);
+
+  &.level_#{$level} { background-color: mix($bright, $dark, $percent); }
 };
 
 TABLE.data_table {
