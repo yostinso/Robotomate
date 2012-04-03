@@ -1,5 +1,24 @@
 (function($) {
   var is_numeric = function(n) { return !isNaN(parseFloat(n)) && isFinite(n); };
+  var index_by = function(array, element, element_callback) {
+    for (var i in array) {
+      if (element[element_callback](array[i])) {
+        return i;
+      }
+    }
+    return -1;
+  };
+  var remove_by = function(array, element, element_callback) {
+    var i = index_by(array, element, element_callback);
+    if (i >= 0) {
+      return array.splice(i, i);
+    }
+    return undefined;
+  };
+  var contains_by = function(array, element, element_callback) {
+    if (index_by(array, element, element_callback) >= 0) { return true; }
+    return false;
+  }
   var cmp = function(x, y) {
     if (x == undefined) { x = 0; }
     if (y == undefined) { y = 0; }
@@ -33,32 +52,27 @@
   };
   DataRow.prototype.content = function(expected_columns) {
     this.expected_columns = (expected_columns == undefined) ? this.expected_columns : expected_columns;
+    var name;
     if (!this._content) {
+      // Create the row and the data cells
       this._content = {
         tr: $(document.createElement('tr')),
-        fields: {}
+        fields: {},
+        blanks: []
       };
-    }
-    var i, name;
-    for (i in this.field_order) {
-      name = this.field_order[i][0];
-      if (this.fields.hasOwnProperty(name)) {
-        var col = (
-          this._content.fields[name] || (this._content.fields[name] = $(document.createElement('td')).addClass(name))
+      for (var i in this.field_order) {
+        name = this.field_order[i][0];
+        if (this.fields.hasOwnProperty(name)) {
+          i++;
+          this._content.tr.append(
+            this._content.fields[name] = $(document.createElement('td')).addClass(name)
           );
-        col.html(this.renderers[name] ? this.renderers[name](this, this.fields[name]) : this.fields[name]);
+        }
       }
     }
-    this._content.tr.html(""); // TODO maybe don't have to clear this out? (remove missing, append otherwise)
-    for (i in this.field_order) {
-      name = this.field_order[i][0];
-      if (this.fields.hasOwnProperty(name)) { this._content.tr.append(this._content.fields[name]); }
-    }
-    i++;
-    while (i < (expected_columns || 0)) {
-      this._content.tr.append( $(document.createElement('td')).addClass('empty') );
-      i++;
-    }
+
+    // Update content
+    this.refresh();
 
     return this._content.tr;
   };
@@ -82,7 +96,24 @@
     if (data_table) { data_table.addRow(this); }
   };
   DataRow.prototype.refresh = function() {
-    this.content(); // TODO: Smarter redraw
+    for (var name in this.fields) {
+      if (this._content.fields.hasOwnProperty(name)) {
+        if (this.renderers[name]) {
+          this.renderers[name](this._content.fields[name], this, this.fields[name]);
+        } else {
+          this._content.fields[name].html(this.fields[name]);
+        }
+      }
+    }
+
+    // Add/remove any extra cells
+    while (this.field_order.length+this._content.blanks.length < this.expected_columns) {
+      this._content.blanks.push($(document.createElement('td').addClass('empty').appendTo(this._content.tr)));
+    }
+    while (this.field_order.length+this._content.blanks.length > this.expected_columns) {
+      this._content.blanks.pop().remove();
+    }
+
   }
 
   var DataTable = function(container, options) {
@@ -131,9 +162,22 @@
           .appendTo(this._content.header);
       }
     }
-    this._content.body.html(""); // TODO maybe don't have to clear this out? (remove missing, append otherwise)
+    this.displayed_data = this.displayed_data || [];
     for (i in this.data) {
-      this._content.body.append(this.data[i].content(headers.length));
+      var d = this.data[i];
+      if (!contains_by(this.displayed_data, d, 'equal')) {
+        // Add this row
+        this._content.body.append(this.data[i].content(headers.length));
+        this.displayed_data.push(d);
+      }
+    }
+    for (i in this.displayed_data) {
+      var d = this.displayed_data[i];
+      var idx = index_by(this.data, d, 'equal');
+      if (!idx) {
+        // Removed this row
+        this.displayed_data.splice(idx, idx)[0].remove();
+      }
     }
   };
   DataTable.prototype.addRow = function(data_row, maintain_unique) {

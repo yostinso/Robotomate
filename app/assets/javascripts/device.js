@@ -1,4 +1,18 @@
 (function() {
+  var toggle_on_off = function(e) {
+    var on = $(e.target).parent().find('.btn-success');
+    var off = $(e.target).parent().find('.btn-danger');
+    if (on.hasClass('active')) {
+      this.turn_off();
+      on.removeClass('active');
+      off.addClass('active');
+    } else {
+      this.turn_on();
+      off.removeClass('active');
+      on.addClass('active');
+    }
+  };
+
   var Device = function(attributes) {
     var me = new DataRow(attributes, {
       primary_key: 'id',
@@ -8,13 +22,40 @@
         [ 'state', "Status" ]
       ],
       renderers: {
-        'state': function(d, val) {
-          var other_val = (val == "on" ? "off" : "on");
-          return '<a class="device_toggle ' + val + '" href="/device/' + d.fields.id + '/' + other_val + '">' + val + '</a>';
-        }
+        'state': $.proxy(function(container, d, val) {
+          var btn_group = $(container.children('div.btn-group'));
+          if (btn_group.length != 1) { btn_group = $(document.createElement('div')).addClass('btn-group').appendTo(container); }
+          var on = btn_group.children('.btn-success');
+          if (on.length != 1) {
+            on = $(document.createElement("button")).appendTo(btn_group).addClass('btn btn-mini btn-success').html("on");
+            on.click($.proxy(toggle_on_off, this));
+          }
+          var off = btn_group.children('.btn-danger');
+          if (off.length != 1) {
+            off = $(document.createElement("button")).appendTo(btn_group).addClass('btn btn-mini btn-danger').html("off");
+            off.click($.proxy(toggle_on_off, this));
+          }
+          if (val == "off") {
+            on.removeClass('active'); off.addClass('active');
+          } else {
+             off.removeClass('active'); on.addClass('active');
+          }
+        }, this)
       }
     });
     $.extend(this, me); // Device inherits from DataRow
+  };
+  Device.prototype.turn_on = function() {
+    $.ajax({
+      url: "/device/" + this.fields.id + "/on",
+      type: "POST"
+    });
+  };
+  Device.prototype.turn_off = function() {
+    $.ajax({
+      url: "/device/" + this.fields.id + "/off",
+      type: "POST"
+    });
   };
   Device.namespace = "device";
   Device.prototype.update = function(e, attributes) {
@@ -52,6 +93,8 @@
   Device.addDevice = function(e, d, data_table) {
     var data_table = data_table || Device.default_data_table;
     var device = Device.create(d);
+    window.debug_devices = window.debug_devices || [];
+    window.debug_devices.push(device);
     device.setTable(data_table);
     device.subscribe(RemoteEventProxy);
   };

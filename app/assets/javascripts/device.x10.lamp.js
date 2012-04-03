@@ -4,26 +4,27 @@
   Device.X10.Lamp = function(attributes) {
     this.parent = new Device.X10(attributes);
     this.parent.field_order.push([ "dim_level", "Brightness" ]);
-    this.parent.renderers['dim_level'] = function(d, val) {
-      var container = $(document.createElement('div'))
+    this.parent.renderers['dim_level'] = function(container, d, val) {
+      var bg_div = $(document.createElement('div'))
         .addClass("x10_lamp_brightness").addClass("level_" + val);
 
       $(document.createElement('img'))
         .attr('src', Device.X10.Lamp.BULB_ICON)
         .attr('alt', val)
         .attr('title', val + "/" + Device.X10.Lamp.MAX_BRIGHT)
-        .appendTo(container);
-      return container;
+        .appendTo(bg_div);
+
+      container.html(bg_div);
     };
     $.extend(this, this.parent);
     $.extend(this, Device.X10.Lamp.prototype);
   };
   Device.X10.Lamp.prototype.subscribe = function(remote_event_proxy) {
-    this.parent.subscribe(remote_event_proxy);
+    $.proxy(this.parent.subscribe, this)(remote_event_proxy);
     remote_event_proxy.subscribe(Device, 'dim_level_changed', this.fields.id, $.proxy(this.update, this));
   };
   Device.X10.Lamp.prototype.unsubscribe = function(remote_event_proxy) {
-    this.parent.unsubscribe(remote_event_proxy);
+    $.proxy(this.parent.unsubscribe, this)(remote_event_proxy);
     remote_event_proxy.unsubscribe(Device, 'dim_level_changed', this.fields.id);
   };
   Device.X10.Lamp.MIN_BRIGHT = 1;

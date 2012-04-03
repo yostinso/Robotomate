@@ -27,10 +27,12 @@ class DeviceController < ApplicationController
 
   def on
     @device.on
+    return render :json => true if request.xhr?
     redirect_to :controller => :device, :action => :index
   end
   def off
     @device.off
+    return render :json => true if request.xhr?
     redirect_to :controller => :device, :action => :index
   end
 
