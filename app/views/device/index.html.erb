@@ -1,7 +1,9 @@
 <%= javascript_include_tag "remote_event_proxy" %>
 <script type="text/javascript">
   jQuery(document).ready(function() {
-      Device.default_data_table =  new DataTable($('#devices'), {});
+      Device.default_data_table =  new DataTable(
+              $('#devices'), { classes: 'data_table table table-condensed table-bordered' }
+      );
 
       <%= start_remote_event_proxy() %>
       RemoteEventProxy.subscribe(Device, 'add', null, Device.addDevice);
@@ -18,6 +20,10 @@
       });
   });
 </script>
-<div id="devices">nothing?</div>
+<div class="row">
+  <div class="span3">
+    <div id="devices">nothing?</div>
+    <a class="stop_refresh" href="#">Stop Updating</a>
+  </div>
+</div>
 
-<a class="stop_refresh" href="#">Stop Updating</a>

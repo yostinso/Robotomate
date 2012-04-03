@@ -8,10 +8,6 @@
 };
 
 TABLE.data_table {
-  border-collapse: collapse;
-  TD {
-    border: 1px solid black;
-  }
   DIV.x10_lamp_brightness {
     $bulb_ratio: 58/100;
     $height: 2em;

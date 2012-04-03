@@ -36,6 +36,15 @@ class DeviceController < ApplicationController
     redirect_to :controller => :device, :action => :index
   end
 
+
+  def dim_select
+    if request.xhr?
+      render :partial => :dim_select, :layout => false
+    else
+      redirect_to :controller => :device, :action => :index
+    end
+  end
+
   private
   def assign_daemon
     daemon = Robotomate::Daemon.all_daemons[:Ez_Srve_121]

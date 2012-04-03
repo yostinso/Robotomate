@@ -117,19 +117,19 @@
   }
 
   var DataTable = function(container, options) {
-    options = options || {};
+    this.options = options || {};
     this.container = container;
     this.data = [];
 
-    this.sort_key = options.sort_key || 'primary_key';
+    this.sort_key = this.options.sort_key || 'primary_key';
     this.sort_func = sort_cmp(this.sort_key);
-    this.sorted = options.sorted == undefined ? true : options.sorted;
+    this.sorted = this.options.sorted == undefined ? true : this.options.sorted;
 
     $(this.container).html(this.content());
   };
   DataTable.prototype.content = function() {
     if (!this._content) {
-      var t = $(document.createElement("table")).addClass('data_table');
+      var t = $(document.createElement("table")).addClass(this.options.classes || 'data_table');
       this._content = {
         table: t,
         header: $(document.createElement("thead")).append($(document.createElement("tr")).addClass('header_row')).appendTo(t),
