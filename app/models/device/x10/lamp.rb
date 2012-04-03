@@ -25,6 +25,7 @@ class Device::X10::Lamp < Device::X10
   end
 
   def dim
+    raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :dim)
     if self.off?
       self.dim_level = MAX_BRIGHT
@@ -33,6 +34,7 @@ class Device::X10::Lamp < Device::X10
     end
   end
   def bright
+    raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :bright)
     if self.off?
       self.dim_level = MAX_BRIGHT
@@ -49,6 +51,7 @@ class Device::X10::Lamp < Device::X10
     val = val.to_i
     full_off = (val < MIN_BRIGHT)
     val = MIN_BRIGHT if val < MIN_BRIGHT
+    val = MAX_BRIGHT if val > MAX_BRIGHT
 
     while self.dim_level != val
       if self.dim_level > val
@@ -83,6 +86,8 @@ class Device::X10::Lamp < Device::X10
   end
   def dim_level=(level)
     extra[:dim_level] = level
+    self.state = :on if level > 0
+    self.state = :off if level <= 0
     self.save! if @immediate_write
   end
 end

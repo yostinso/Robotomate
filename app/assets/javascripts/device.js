@@ -1,15 +1,15 @@
 (function() {
   var toggle_on_off = function(e) {
-    var on = $(e.target).parent().find('.btn-success');
-    var off = $(e.target).parent().find('.btn-danger');
-    if (on.hasClass('active')) {
+    var btn = $(e.target);
+    var btns = btn.parent().find('.btn');
+    if (btn.hasClass('btn-danger')) {
       this.turn_off();
-      on.removeClass('active');
-      off.addClass('active');
+      btns.removeClass('btn-danger').addClass('btn-success');
+      btn.html("Turn On");
     } else {
       this.turn_on();
-      off.removeClass('active');
-      on.addClass('active');
+      btns.removeClass('btn-success').addClass('btn-danger');
+      btn.html("Turn Off");
     }
   };
 
@@ -25,20 +25,15 @@
         'state': $.proxy(function(container, d, val) {
           var btn_group = $(container.children('div.btn-group'));
           if (btn_group.length != 1) { btn_group = $(document.createElement('div')).addClass('btn-group').appendTo(container); }
-          var on = btn_group.children('.btn-success');
-          if (on.length != 1) {
-            on = $(document.createElement("button")).appendTo(btn_group).addClass('btn btn-mini btn-success').html("on");
-            on.click($.proxy(toggle_on_off, this));
-          }
-          var off = btn_group.children('.btn-danger');
-          if (off.length != 1) {
-            off = $(document.createElement("button")).appendTo(btn_group).addClass('btn btn-mini btn-danger').html("off");
-            off.click($.proxy(toggle_on_off, this));
+          var btn = btn_group.children('button').filter(":first");
+          if (btn.length != 1) {
+            btn = $(document.createElement("button")).appendTo(btn_group).addClass('btn btn-mini');
+            btn.click($.proxy(toggle_on_off, this));
           }
           if (val == "off") {
-            on.removeClass('active'); off.addClass('active');
+            btn.addClass('btn-success').html("Turn On");
           } else {
-             off.removeClass('active'); on.addClass('active');
+            btn.addClass('btn-danger').html("Turn Off");
           }
         }, this)
       }
