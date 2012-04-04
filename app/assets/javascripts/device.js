@@ -25,15 +25,19 @@
         'state': $.proxy(function(container, d, val) {
           var btn_group = $(container.children('div.btn-group'));
           if (btn_group.length != 1) { btn_group = $(document.createElement('div')).addClass('btn-group').appendTo(container); }
-          var btn = btn_group.children('button').filter(":first");
+          var btns = btn_group.children('button');
+          var btn = btns.filter(":first");
           if (btn.length != 1) {
             btn = $(document.createElement("button")).appendTo(btn_group).addClass('btn btn-mini');
             btn.click($.proxy(toggle_on_off, this));
+            btns = btn;
           }
           if (val == "off") {
-            btn.addClass('btn-success').html("Turn On");
+            btns.removeClass('btn-danger').addClass('btn-success');
+            btn.html("Turn On");
           } else {
-            btn.addClass('btn-danger').html("Turn Off");
+            btns.removeClass('btn-success').addClass('btn-danger');
+            btn.html("Turn Off");
           }
         }, this)
       }

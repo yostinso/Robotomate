@@ -14,7 +14,8 @@
 
 class Device::X10 < Device
   before_save :check_valid_address
-  JSNAME = "Device.X10"
+  validates_uniqueness_of :address
+
   def house
     self.address.split(/:/)[0]
   end
