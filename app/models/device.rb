@@ -2,15 +2,15 @@
 #
 # Table name: devices
 #
-#  id         :integer         not null, primary key
-#  address    :string(255)
-#  state      :text
-#  type       :string(255)
-#  created_at :datetime
-#  updated_at :datetime
-#  name       :string(255)
-#  extra      :text
-#  daemon     :string(255)
+#  id          :integer         not null, primary key
+#  address     :string(255)
+#  state       :text
+#  type        :string(255)
+#  created_at  :datetime
+#  updated_at  :datetime
+#  name        :string(255)
+#  extra       :text
+#  daemon_name :string(255)
 #
 
 # @attr [Robotomate::Daemon] daemon the daemon through which communication with this device will occur
