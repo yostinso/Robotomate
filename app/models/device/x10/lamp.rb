@@ -10,6 +10,7 @@
 #  updated_at :datetime
 #  name       :string(255)
 #  extra      :text
+#  daemon     :string(255)
 #
 
 class Device::X10::Lamp < Device::X10

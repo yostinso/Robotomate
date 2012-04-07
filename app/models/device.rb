@@ -10,6 +10,7 @@
 #  updated_at :datetime
 #  name       :string(255)
 #  extra      :text
+#  daemon     :string(255)
 #
 
 # @attr [Robotomate::Daemon] daemon the daemon through which communication with this device will occur
