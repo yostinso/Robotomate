@@ -10,3 +10,19 @@
 //
 // Twitter Bootstrap via less-rails-bootstrap gem
 //= require twitter/bootstrap
+
+(function($) {
+  $(document).ready(function() {
+    //
+    $('INPUT.single-char')
+      .focus(function(e) { $(this).select(); }) // TODO: What's the right call here?
+      .click(function(e) { $(this).select(); })
+      .keyup(function(e) {
+        var i = $(this);
+        console.log(i.val());
+        if (i.val().length == 1) {
+          console.log(i.next('INPUT'));
+        }
+    })
+  });
+})(jQuery);

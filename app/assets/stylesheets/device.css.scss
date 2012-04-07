@@ -52,3 +52,24 @@ TABLE.data_table {
   @include lamp-icon(2em, 'x10_lamp_brightness');
   @include lamp-icon(14px, 'x10_lamp_brightness_icon');
 }
+
+FORM .control-group .controls {
+  INPUT.single-char {
+    width: 15px;
+    min-width: 15px;
+  }
+  SPAN.add-on.single-char {
+    width: 8px;
+    min-width: 8px;
+  }
+}
+
+// Insert an add-on between two elements (both prepend and append)
+FORM .control-group .controls .input-prepend.input-append .add-on {
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  border-radius: 0;
+}

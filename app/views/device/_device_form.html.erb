@@ -1,0 +1,16 @@
+<%= form_tag({ :controller => :device, :action => action }, { :class => 'form-horizontal' }) do %>
+    <fieldset>
+      <div class="control-group">
+        <label for="addressHouse" class="control-label">Address</label>
+        <div class="controls">
+          <div class="input-append">
+            <input id="addressHouse" name="address_house" type="text" size="2" maxlength="1" class="single-char" />
+          </div><div class="input-append input-prepend">
+              <span class="add-on single-char">:</span>
+          </div><div class="input-prepend">
+            <input id="addressNumber" name="address_number" type="text" size="2" maxlength="1" class="single-char" />
+          </div>
+        </div>
+      </div>
+    </fieldset>
+<% end %>

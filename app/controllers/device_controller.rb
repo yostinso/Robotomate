@@ -20,9 +20,9 @@ class DeviceController < ApplicationController
   end
 
   def new
-  end
-
-  def edit
+    render '_device_form', :locals => {
+        :action => :new
+    }
   end
 
   def on

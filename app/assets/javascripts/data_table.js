@@ -108,7 +108,7 @@
 
     // Add/remove any extra cells
     while (this.field_order.length+this._content.blanks.length < this.expected_columns) {
-      this._content.blanks.push($(document.createElement('td').addClass('empty').appendTo(this._content.tr)));
+      this._content.blanks.push($(document.createElement('td')).addClass('empty').appendTo(this._content.tr));
     }
     while (this.field_order.length+this._content.blanks.length > this.expected_columns) {
       this._content.blanks.pop().remove();
