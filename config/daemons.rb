@@ -9,9 +9,9 @@ elsif Rails.env == "development"
     port 8002
     debug true
   end
-  define_daemon :Lirc_104 do
+  define_daemon :Lirc_105 do
     daemon Robotomate::Daemon::LIRC
-    host "192.168.2.104"
+    host "192.168.2.105"
     port 8765
     debug true
   end

@@ -43,11 +43,6 @@ class Device::Insteon < Device
     { :id => self.id, :name => self.name, :state => self.state, :type => self.js_type }
   end
 
-  protected
-  def js_type
-    self.type.gsub(/::/, '.')
-  end
-
   private
   def check_valid_address
     # FF.FF.FF

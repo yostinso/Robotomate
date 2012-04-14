@@ -55,6 +55,11 @@ class Device < ActiveRecord::Base
     self
   end
 
+  protected
+  def js_type
+    self.type.gsub(/::/, '.')
+  end
+
   private
   def ensure_extra_is_hash
     self.extra = Hash.new if self.extra.nil?

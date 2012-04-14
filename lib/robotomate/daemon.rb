@@ -77,15 +77,15 @@ module Robotomate
       begin
         @socket = TCPSocket.open(@host, @port)
         @connected = true
-      rescue Exception
+      rescue Exception => e
+        Rails.logger.error("Daemon #{self} failed to connect: #{e.pretty_inspect}")
         @connected = false
       end
     end
 
     # Attempt to disconnect an already connected socket. Does nothing unless {#connected?} is true
     def disconnect
-      #noinspection RubyControlFlowConversionInspection
-      if !connected?
+      if connected?
         @connected = false
         @socket.close
       end
@@ -157,8 +157,8 @@ module Robotomate
       listeners = IO.select([ @socket ], nil, nil, timeout_ms)
       if listeners && listeners[0].include?(@socket)
         if @socket.eof?
-          @socket.puts "effyou"
-          raise new Exception("Disconnected by remote side")
+          @connected = false
+          raise Exception.new("Disconnected by remote side")
         else
           res = gets_nonblock(@socket, timeout)
           debug_log "  Read: #{res}"

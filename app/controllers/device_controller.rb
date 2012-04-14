@@ -44,11 +44,8 @@ class DeviceController < ApplicationController
 
   private
   def assign_daemon
-    if @device.is_a?(Device::X10) || @device.is_a?(Device::Insteon)
-      daemon = Robotomate::Daemon.all_daemons[:Ez_Srve_121]
-    else
-      daemon = Robotomate::Daemon.all_daemons[:Lirc_104]
-    end
+    daemon = Robotomate::Daemon.all_daemons[@device.daemon_name.to_sym]
+    raise "Daemon not found" unless daemon # TODO: Real exception
     @device.set_daemon(daemon)
   end
   def find_device
