@@ -12,6 +12,9 @@ Robotomate::Application.routes.draw do
   match 'device/:id/on' => 'device#on'
   match 'device/:id/off' => 'device#off'
   match 'device/:id/dim_to' => 'device#dim_to'
+  match 'device/all_on' => 'device#all_on'
+  match 'device/all_off' => 'device#all_off'
+  match 'device/create' => 'device#create'
 
   if Rails.env == "development" || Rails.env == "test"
     match 'test/qunit_data_loader' => 'test#qunit_data_loader'

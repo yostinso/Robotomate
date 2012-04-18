@@ -73,3 +73,11 @@ FORM .control-group .controls .input-prepend.input-append .add-on {
   -moz-border-radius: 0;
   border-radius: 0;
 }
+TABLE.data_table {
+  TD, TH {
+    white-space: nowrap;
+    .btn-group .btn {
+      float: none;
+    }
+  }
+}

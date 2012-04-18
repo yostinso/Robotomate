@@ -35,6 +35,16 @@ class DeviceController < ApplicationController
     return render :json => true if request.xhr?
     redirect_to :controller => :device, :action => :index
   end
+  def all_on
+    # TODO: all_on
+  end
+  def all_off
+    # TODO: all_off
+  end
+  def create
+    # TODO: create
+    render :text => "TODO: create device"
+  end
   def dim_to
     dim_level = params[:level].to_i
     @device.dim_to(dim_level)
