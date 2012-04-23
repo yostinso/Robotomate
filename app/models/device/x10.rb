@@ -14,8 +14,8 @@
 #
 
 class Device::X10 < Device
-  before_save :check_valid_address
-  validates_uniqueness_of :address
+  include DeviceValidations
+  before_method [ :on, :off ], :ensure_daemon_exists
 
   def house
     self.address.split(/:/)[0]
@@ -24,12 +24,10 @@ class Device::X10 < Device
     self.address.split(/:/)[1]
   end
   def on
-    raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :on)
     self.state = :on
   end
   def off
-    raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :off)
     self.state = :off
   end

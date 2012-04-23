@@ -14,16 +14,14 @@
 #
 
 class Device::Insteon < Device
-  before_save :check_valid_address
-  validates_uniqueness_of :address
+  include DeviceValidations
+  before_method [ :on, :off ], :ensure_daemon_exists
 
   def on
-    raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :on)
     self.state = :on
   end
   def off
-    raise NoDaemonException.new() unless @daemon
     @daemon.send_cmd(self, :off)
     self.state = :off
   end
