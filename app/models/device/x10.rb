@@ -44,11 +44,16 @@ class Device::X10 < Device
   def to_h
     { :id => self.id, :name => self.name, :state => self.state, :type => self.js_type }
   end
+  def self.matches_address(address)
+    (address || '').gsub(/\s/, '').match(/^([A-P]):?([1-9]|1[0-6])$/)
+  end
 
   private
   def check_valid_address
     # A-P, 1-16
-    ok = !self.address.blank? && self.address.match(/^[A-P]:([1-9]|1[0-6])$/) ? true : false
+    house, number = self.matches_address(self.address)
+    ok = !self.address.blank? && !house.blank? && !number.blank?
+    self.address = [ house, number ].join(":") if ok
     self.errors.add(:address, "is invalid") unless ok
     return ok
   end

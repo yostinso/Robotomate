@@ -6,7 +6,12 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require_tree .
+//= require data_table
+//= require remote_event_proxy
+//= require device
+//= require device.x10
+//= require device.x10.lamp
+//= require device.infrared
 //
 // Twitter Bootstrap via less-rails-bootstrap gem
 //= require twitter/bootstrap
