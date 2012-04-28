@@ -7,6 +7,7 @@ DEVICE_TYPES = [
     Device::X10,
     Device::X10::Lamp,
     Device::Insteon,
+    Device::Insteon::Lamp,
     Device::Infrared,
     Device::Infrared::Receiver
 ]
