@@ -6,7 +6,9 @@
 //
 //= require jquery
 //= require jquery_ujs
-//= require_tree .
+//= require data_table
+//= require remote_event_proxy
+//= require devices
 //
 // Twitter Bootstrap via less-rails-bootstrap gem
 //= require twitter/bootstrap
