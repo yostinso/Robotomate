@@ -1,5 +1,5 @@
 class DeviceController < ApplicationController
-  before_filter :find_device, :except => [ :index, :new ]
+  before_filter :find_device, :except => [ :index, :new, :create ]
   before_filter :assign_daemon, :only => [ :on, :off, :dim_to ]
   def show
     if request.xhr? || request.format == "json"
@@ -13,16 +13,9 @@ class DeviceController < ApplicationController
 
   def index
     @devices = Device.all
-    @device_subset_name = "device"
     if request.xhr?
       return render :json => @devices.map { |d| d.id }
     end
-  end
-
-  def new
-    render '_device_form', :locals => {
-        :action => :new
-    }
   end
 
   def on
@@ -42,8 +35,18 @@ class DeviceController < ApplicationController
     # TODO: all_off
   end
   def create
-    # TODO: create
-    render :text => "TODO: create device"
+    @device_types = DEVICE_TYPES.map { |klass| [ klass.friendly_type, klass.name ] }.sort
+    @daemon_names = Robotomate::Daemon.all_daemons.keys.sort
+    @device_groups = DeviceGroup.all.map { |dg| [ dg.name, dg.id ] }.sort
+    render :_device_form
+  end
+  def update
+    # Requires @device, but then we just call:
+    create
+  end
+
+  def create_or_update
+
   end
   def dim_to
     dim_level = params[:level].to_i
@@ -64,6 +67,7 @@ class DeviceController < ApplicationController
       return true
     rescue
       @device = nil
+      Rails.logger.debug("find_device: Device not found for '#{params[:id]}', redirecting")
       redirect_to(:controller => :device, :action => :index)
       return false
     end

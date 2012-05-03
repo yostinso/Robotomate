@@ -17,6 +17,7 @@
 # @attr [Boolean] immediate_write (true) )whether or not to immediately update the database when the state changes
 class Device < ActiveRecord::Base
   class NoDaemonException < ::Exception; end
+  has_and_belongs_to_many :device_groups
 
   validates_exclusion_of :type, :in => %w(Device), :message => "Cannot create an abstract Device"
   validates_presence_of :type, :message => "Cannot create an abstract Device with no type"
@@ -53,6 +54,21 @@ class Device < ActiveRecord::Base
   def set_daemon(daemon)
     @daemon = daemon
     self
+  end
+
+  def self.friendly_type
+    self.name.sub(/^Device::/, '').gsub(/::/, ' - ')
+  end
+  def friendly_type
+    self.class.friendly_type
+  end
+
+  def self.types_from_address(address)
+    DEVICE_TYPES.find_all { |klass| klass.matches_address(address) }
+  end
+
+  def self.matches_address(address)
+    false
   end
 
   protected

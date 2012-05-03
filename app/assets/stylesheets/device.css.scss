@@ -51,6 +51,8 @@
 TABLE.data_table {
   @include lamp-icon(2em, 'x10_lamp_brightness');
   @include lamp-icon(14px, 'x10_lamp_brightness_icon');
+  @include lamp-icon(2em, 'insteon_lamp_brightness');
+  @include lamp-icon(14px, 'insteon_lamp_brightness_icon');
 }
 
 FORM .control-group .controls {

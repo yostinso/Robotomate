@@ -70,6 +70,21 @@ class Robotomate::Daemon::EZSrve < Robotomate::Daemon
     msg = insteon_message(device, "0x13")
     self.send_and_verify_insteon(msg, device.address)
   end
+  def send_insteon_bright(device)
+    debug_log("Brightening device #{device}")
+    msg = insteon_message(device, "0x15")
+    send.send_and_verify_insteon(msg, device.address)
+  end
+  def send_insteon_dim(device)
+    debug_log("Dimming device #{device}")
+    msg = insteon_message(device, "0x16")
+    send.send_and_verify_insteon(msg, device.address)
+  end
+  def send_insteon_dim_to(device, level)
+    debug_log("Dimming device #{device} to #{level}")
+    level_hex = "0x" + ("%02x" % level).upcase
+    msg = insteon_message(device, "0x11", level_hex)
+  end
 
   def insteon_message(device, cmd1, cmd2 = nil, data = nil)
     cmd_detail = "<CommandDetail Cmd1=\"#{cmd1}\""

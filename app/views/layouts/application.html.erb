@@ -11,6 +11,16 @@
   <script type="text/javascript">
     Device.X10.Lamp.BULB_ICON = '<%= escape_javascript(image_path("device_icons/bulb.svg")) %>';
   </script>
+  <script type="text/javascript">
+    <%= raw (yield :script_head).gsub(/[\r\n]*<\/?script[^>]*>[\r\n*]/, '') %>
+  </script>
+  <script type="text/javascript">
+    (function($) {
+      $(document).ready(function() {
+        <%= raw (yield :script_onready).gsub(/[\r\n]*<\/?script[^>]*>[\r\n*]/, '') %>
+      });
+    })(jQuery);
+  </script>
   <%= yield :header %>
 </head>
 <body>
