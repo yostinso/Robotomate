@@ -34,7 +34,7 @@ gem 'less-rails-bootstrap', '~> 2.0.8'
 # gem 'unicorn'
 
 # Deploy with Capistrano
-# gem 'capistrano'
+gem 'capistrano'
 
 # To use debugger
 # gem 'ruby-debug'
