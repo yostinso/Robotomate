@@ -1,0 +1,5 @@
+set  :deploy_to, "/var/www/robotomate"
+set  :gateway,   "www.aradine.com"                          # SSH through here first
+role :web,       "arkansauce.aradine.com"                   # Your HTTP server, Apache/etc
+role :app,       "arkansauce.aradine.com"                   # This may be the same as your `Web` server
+role :db,        "arkansauce.aradine.com", :primary => true # This is where Rails migrations will run
