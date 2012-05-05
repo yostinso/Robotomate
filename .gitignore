@@ -3,7 +3,6 @@ db/*.sqlite3
 log/*.log
 tmp/
 .sass-cache/
-Gemfile.lock
 config/database.yml
 db/schema.rb
 .idea
