@@ -41,14 +41,14 @@ class Device::Insteon < Device
     { :id => self.id, :name => self.name, :state => self.state, :type => self.js_type }
   end
 
-  def matches_address(address)
+  def self.matches_address(address)
     # FF.FF.FF
     (address || '').gsub(/\s/, '').match(/^([0-9A-F]{2})\.?([0-9A-F]{2})\.?([0-9A-F]{2})$/)
   end
 
   private
   def check_valid_address
-    a, b, c = self.matches_address(self.address)
+    _, a, b, c = self.class.matches_address(self.address).to_a
     ok = !self.address.blank? && !a.blank? && !b.blank? && !c.blank?
     self.address = [a, b, c].join(".") if ok
     self.errors.add(:address, "is invalid") unless ok

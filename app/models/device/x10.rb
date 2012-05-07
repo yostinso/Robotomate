@@ -51,7 +51,7 @@ class Device::X10 < Device
   private
   def check_valid_address
     # A-P, 1-16
-    house, number = self.matches_address(self.address)
+    _, house, number = self.matches_address(self.address)
     ok = !self.address.blank? && !house.blank? && !number.blank?
     self.address = [ house, number ].join(":") if ok
     self.errors.add(:address, "is invalid") unless ok
