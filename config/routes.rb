@@ -10,7 +10,7 @@ Robotomate::Application.routes.draw do
   match 'device/all_on' => 'device#all_on'
   match 'device/all_off' => 'device#all_off'
   match 'device/create' => 'device#create'
-  match 'device/update/:id' => 'device#update'
+  match 'device/edit/:id' => 'device#edit'
   match 'device/:id/on' => 'device#on'
   match 'device/:id/off' => 'device#off'
   match 'device/:id/dim_to' => 'device#dim_to'

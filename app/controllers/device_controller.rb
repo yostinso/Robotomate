@@ -1,6 +1,7 @@
 class DeviceController < ApplicationController
-  before_filter :find_device, :except => [ :index, :new, :create ]
+  before_filter :find_device, :except => [ :index, :new, :create, :create_or_update ]
   before_filter :assign_daemon, :only => [ :on, :off, :dim_to ]
+  before_filter :init_device_form_variables, :only => [ :create, :edit, :index ]
   def show
     if request.xhr? || request.format == "json"
       return render :json => {
@@ -35,12 +36,8 @@ class DeviceController < ApplicationController
     # TODO: all_off
   end
   def create
-    @device_types = DEVICE_TYPES.map { |klass| [ klass.friendly_type, klass.name ] }.sort
-    @daemon_names = Robotomate::Daemon.all_daemons.keys.sort
-    @device_groups = DeviceGroup.all.map { |dg| [ dg.name, dg.id ] }.sort
-    render :_device_form
   end
-  def update
+  def edit
     # Requires @device, but then we just call:
     create
   end
@@ -60,6 +57,11 @@ class DeviceController < ApplicationController
     daemon = Robotomate::Daemon.all_daemons[@device.daemon_name.to_sym]
     raise "Daemon not found" unless daemon # TODO: Real exception
     @device.set_daemon(daemon)
+  end
+  def init_device_form_variables
+    @device_types = DEVICE_TYPES.map { |klass| [ klass.friendly_type, klass.name ] }.sort
+    @daemon_names = Robotomate::Daemon.all_daemons.keys.sort
+    @device_groups = DeviceGroup.all.map { |dg| [ dg.name, dg.id ] }.sort
   end
   def find_device
     begin
