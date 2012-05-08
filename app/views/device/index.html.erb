@@ -38,7 +38,9 @@
             <li class="hidden-phone hidden-tablet dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown">Add Device</a>
               <ul class="dropdown-menu"><li class="well">
-                <%= render :partial => 'device_form' %>
+                <%= form_for_device({ :controller => :device, :action => :create_or_update }, { :class => 'form-horizontal restful-put', :id => 'add_device' }) do |field_content| %>
+                  <%= field_content %>
+                <% end %>
               </li></ul>
             </li>
             <li class="dropdown">

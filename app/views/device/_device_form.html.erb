@@ -1,51 +1,44 @@
-<%= form_tag({ :controller => :device, :action => :create_or_update }, { :class => 'form-horizontal restful-put', :id => 'device' }) do %>
-  <fieldset>
-    <div class="control-group">
-      <%= label :device, :name, :class => "control-label" %>
-      <div class="controls">
-        <%= text_field :device, :name, :class => "input-large", :maxlength => "255" %>
-      </div>
+<fieldset>
+  <div class="control-group">
+    <%= label :device, :name, :class => "control-label" %>
+    <div class="controls">
+      <%= text_field :device, :name, :class => "input-large", :maxlength => "255" %>
     </div>
-    <div class="control-group">
-      <%= label :device, :address, :class => "control-label" %>
-      <div class="controls">
-        <%= text_field :device, :address, :class => "input-large", :maxlength => "255" %>
-      </div>
+  </div>
+  <div class="control-group">
+    <%= label :device, :address, :class => "control-label" %>
+    <div class="controls">
+      <%= text_field :device, :address, :class => "input-large", :maxlength => "255" %>
     </div>
-    <div class="control-group">
-      <%= label :device, :type, :class => "control-label" %>
-      <div class="controls">
-        <%= select :device, :type, @device_types %>
-      </div>
+  </div>
+  <div class="control-group">
+    <%= label :device, :type, :class => "control-label" %>
+    <div class="controls">
+      <%= select :device, :type, @device_types %>
     </div>
-    <div class="control-group">
-      <%= label :device, :daemon_name, :class => "control-label" %>
-      <div class="controls">
-        <%= select :device, :daemon_name, @daemon_names %>
-      </div>
+  </div>
+  <div class="control-group">
+    <%= label :device, :daemon_name, :class => "control-label" %>
+    <div class="controls">
+      <%= select :device, :daemon_name, @daemon_names %>
     </div>
-    <div class="control-group">
-      <%= label :device, :device_groups, :class => "control-label" %>
-      <div class="controls">
-        <%= selected_device_groups = @device ? @device.device_groups.map { |dg| dg.id } : []
-            selected_device_groups = [""] if selected_device_groups.empty?
-            select :device,
-                   :device_groups,
-                   [[ "None", "" ]] + @device_groups,
-                   { :selected => selected_device_groups },
-                   :multiple => true
-        %>
-      </div>
+  </div>
+  <div class="control-group">
+    <%= label :device, :device_groups, :class => "control-label" %>
+    <div class="controls">
+      <%= selected_device_groups = @device ? @device.device_groups.map { |dg| dg.id } : []
+          selected_device_groups = [""] if selected_device_groups.empty?
+          select :device,
+                 :device_groups,
+                 [[ "None", "" ]] + @device_groups,
+                 { :selected => selected_device_groups },
+                 :multiple => true
+      %>
     </div>
-    <div class="form-actions">
-      <%= submit_tag t(@device ? 'update' : 'create', :scope => [ :helpers, :button, :device ]), :class => "btn btn-primary" %>
-      <%= button_tag t(:cancel, :scope => [ :helpers, :button, :device ]), :class => "btn cancel", :type => "button" %>
-    </div>
-  </fieldset>
-<% end %>
-<% content_for :script_onready do %>
-  <script type="text/javascript">
-    // Make the cancel button cause its parent form to fire a 'cancel' event
-    $('FORM#device BUTTON.cancel').click(function() { $(this.form).trigger('cancel'); })
-  </script>
-<% end %>
+  </div>
+  <div class="form-actions">
+    <%= submit_tag t(@device ? 'update' : 'create', :scope => [ :helpers, :button, :device ]), :class => "btn btn-primary" %>
+    <%= button_tag t(:cancel, :scope => [ :helpers, :button, :device ]), :class => "btn cancel", :type => "button",
+                   :onclick => "$(this).parents('form').trigger('cancel')" %>
+  </div>
+</fieldset>
